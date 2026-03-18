@@ -17,12 +17,14 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            height: auto;
+            overflow-y: auto;
             margin: 0;
             color: #ffffff;
             background: linear-gradient(-45deg, #0f172a, #1e1b4b, #111827, #1e293b);
             background-size: 400% 400%;
             animation: auroraBackground 20s ease infinite;
-            overflow: hidden;
+            
         }
 
         @keyframes auroraBackground {
@@ -210,6 +212,17 @@
    📱 ADAPTACIÓN PARA MÓVILES (RESPONSIVE) 
    ========================================= */
 @media (max-width: 600px) {
+    /* ... tus otros estilos de móvil ... */
+
+button {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+}
     .reloj-global {
         font-size: 1.8em;
         margin-bottom: 20px;
@@ -245,7 +258,7 @@
         width: 100%; /* Botón ancho para darle fácil con el dedo pulgar */
         max-width: 300px;
     }
-}
+    
     </style>
 </head>
 <body>
