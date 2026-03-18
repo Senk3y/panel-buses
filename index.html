@@ -6,7 +6,11 @@
     <title>Mi Bus</title>
     <style>
         /* FONDO Y ANIMACIONES BASE */
+        * {
+    box-sizing: border-box;
+}
         body {
+            padding: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
@@ -72,18 +76,19 @@
 
         /* TARJETAS */
         .tarjeta {
-            background-color: rgba(30, 30, 30, 0.7); 
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            padding: 35px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            text-align: center;
-            width: 320px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-        }
+    background-color: rgba(30, 30, 30, 0.7); 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 25px; /* Reducido de 35px a 25px */
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    text-align: center;
+    width: 100%; /* ¡Clave para móvil! */
+    max-width: 340px; /* En PC no pasará de este ancho */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+}
 
         .parada {
             font-size: 1.1em;
@@ -201,6 +206,46 @@
             animation: arcoiris 1.5s linear infinite;
             text-shadow: 0 0 15px currentColor;
         }
+        /* =========================================
+   📱 ADAPTACIÓN PARA MÓVILES (RESPONSIVE) 
+   ========================================= */
+@media (max-width: 600px) {
+    .reloj-global {
+        font-size: 1.8em;
+        margin-bottom: 20px;
+        margin-top: 10px;
+    }
+
+    .contenedor-tarjetas {
+        gap: 20px; /* Reducimos el espacio entre tarjetas */
+    }
+
+    .tarjeta {
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    .parada {
+        font-size: 1em;
+        margin-bottom: 15px;
+    }
+
+    .linea {
+        font-size: 1.8em;
+        padding: 5px 15px;
+    }
+
+    .tiempo {
+        font-size: 2.5em; /* Números un poco más pequeños */
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 0.9em;
+        width: 100%; /* Botón ancho para darle fácil con el dedo pulgar */
+        max-width: 300px;
+    }
+}
     </style>
 </head>
 <body>
