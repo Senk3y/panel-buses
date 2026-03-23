@@ -11,24 +11,38 @@
     <meta name="theme-color" content="#020617">
 
     <style>
-        /* MANTENEMOS TU ESTILO CÓSMICO INTACTO */
+        /* ESTILO 80s SYNTHWAVE */
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; color: #ffffff; background: linear-gradient(135deg, #020617, #1e1b4b, #4c1d95, #831843, #1e1b4b, #020617); background-size: 400% 400%; animation: cosmicFlow 15s ease infinite; overflow-x: hidden; position: relative; transition: animation-duration 2s; }
-        body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.15) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(219, 39, 119, 0.15) 0%, transparent 40%); z-index: -1; animation: pulseLights 8s ease-in-out infinite alternate; }
-        @keyframes cosmicFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes pulseLights { from { opacity: 0.5; transform: scale(1); } to { opacity: 1; transform: scale(1.2); } }
-        
-        .fondo-textos { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
-        .mensaje-flotante { position: absolute; white-space: nowrap; font-weight: 900; color: rgba(255, 255, 255, 0.05); user-select: none; animation: moverTexto linear infinite; }
-        @keyframes moverTexto { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; flex-direction: column; align-items: center; 
+            min-height: 100vh; margin: 0; padding: 20px; color: #ffffff; 
+            background-color: #020617; /* Fondo oscuro base */
+            overflow-x: hidden; position: relative; 
+        }
 
-        .reloj-global { font-size: 2.5em; color: #fff; margin: 10px 0 20px 0; font-family: 'Courier New', Courier, monospace; letter-spacing: 4px; text-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 0 0 30px rgba(124, 58, 237, 0.5); z-index: 10; }
+        .reloj-global { 
+            font-size: 2.5em; 
+            color: #FF00FF; 
+            margin: 10px 0 20px 0; 
+            font-family: 'Courier New', Courier, monospace; 
+            letter-spacing: 4px; 
+            text-shadow: 0 0 20px #FF00FF, 0 0 40px #FF00FF; 
+            z-index: 10; 
+        }
 
-        .seccion-app { width: 100%; max-width: 500px; display: none; flex-direction: column; align-items: center; animation: fadeIn 0.4s ease; }
+        .seccion-app { 
+            width: 100%; max-width: 500px; display: none; flex-direction: column; 
+            align-items: center; animation: fadeIn 0.4s ease; 
+        }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .lista-menu { width: 100%; display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
-        .item-menu { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); padding: 15px 20px; border-radius: 22px; display: flex; align-items: center; transition: all 0.3s; backdrop-filter: blur(12px); position: relative; }
+        .item-menu { 
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); 
+            padding: 15px 20px; border-radius: 22px; display: flex; align-items: center; 
+            transition: all 0.3s; backdrop-filter: blur(12px); position: relative; 
+        }
         .item-menu-click { flex-grow: 1; display: flex; align-items: center; cursor: pointer; }
         .item-menu:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.2); }
         .texto-item { flex-grow: 1; display: flex; flex-direction: column; margin-left: 15px; }
@@ -38,10 +52,21 @@
         .btn-borrar { background: none; border: none; color: #ef4444; font-size: 1.2em; cursor: pointer; padding: 10px; opacity: 0.6; transition: 0.3s; }
         .btn-borrar:hover { opacity: 1; transform: scale(1.1); }
 
-        .tarjeta { background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); padding: 30px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); text-align: center; width: 100%; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; }
-        .linea { font-size: 2.2em; font-weight: 900; padding: 8px 30px; border-radius: 15px; margin-bottom: 15px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.3); background: linear-gradient(90deg, #2b70f0, #06b6d4); }
+        .tarjeta { 
+            background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); 
+            padding: 30px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
+            text-align: center; width: 100%; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; 
+        }
+        .linea { 
+            font-size: 2.2em; font-weight: 900; padding: 8px 30px; border-radius: 15px; 
+            margin-bottom: 15px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+            background: linear-gradient(99deg, #FF00FF 0%, #00FFFF 100%); 
+        }
         
-        .tiempo { font-size: 4em; font-weight: 900; color: #4ade80; text-shadow: 0 0 20px rgba(74, 222, 128, 0.3); transition: all 0.3s; }
+        .tiempo { 
+            font-size: 4em; font-weight: 900; color: #00FF00; 
+            text-shadow: 0 0 20px #00FF00, 0 0 40px rgba(0,255,0,0.5); transition: all 0.3s; 
+        }
         .minutos-texto { font-size: 0.4em; color: #94a3b8; display: block; text-transform: uppercase; letter-spacing: 2px; }
         .brillo-carga { animation: pulseCarga 0.8s infinite alternate; color: #64748b !important; text-shadow: none !important; }
         @keyframes pulseCarga { from { opacity: 0.3; } to { opacity: 0.8; } }
@@ -53,7 +78,13 @@
         .estado-servidor { height: 15px; font-size: 0.7em; margin-top: 10px; opacity: 0.4; }
 
         .btn-volver { align-self: flex-start; background: rgba(255,255,255,0.1); border: none; color: #fff; cursor: pointer; font-size: 0.9em; padding: 8px 15px; border-radius: 10px; margin-bottom: 15px; }
-        button.btn-accion { padding: 18px; font-size: 1em; color: white; border: none; border-radius: 20px; font-weight: 900; text-transform: uppercase; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.4); transition: all 0.3s; letter-spacing: 1px; background: linear-gradient(90deg, #2b70f0, #06b6d4); cursor: pointer;}
+        
+        button.btn-accion { 
+            width: 100%; padding: 15px; border: none; border-radius: 15px; color: white; 
+            font-size: 1.1em; font-weight: bold; cursor: pointer; transition: all 0.3s; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            background: linear-gradient(99deg, #FF00FF 0%, #00FFFF 100%); 
+        } 
         button.btn-accion:active { transform: translateY(3px); }
         button.btn-accion:disabled { opacity: 0.5; filter: grayscale(1); }
 
@@ -83,8 +114,7 @@
             </div>
         </div>
         
-        <div class="lista-menu" id="contenedor-paradas">
-            </div>
+        <div class="lista-menu" id="contenedor-paradas"></div>
     </div>
 
     <div id="vista-formulario" class="seccion-app">
@@ -129,10 +159,10 @@
         const APP_KEY = "7337db37d02d34777f38d728ce1c1903"; 
 
         // ESTADO GLOBAL
-        let paradaActiva = null; // Guardará qué parada estamos viendo
+        let paradaActiva = null; 
         let timerActualizacion = null;
 
-        // 1. CARGAR PARADAS DESDE LA MEMORIA (O poner las 3 de ejemplo)
+        // 1. CARGAR PARADAS
         let misParadas = JSON.parse(localStorage.getItem('paradasGuardadas'));
         if (!misParadas || misParadas.length === 0) {
             misParadas = [
@@ -146,13 +176,12 @@
         // 2. RENDERIZAR MENÚ
         function renderizarMenu() {
             const contenedor = document.getElementById('contenedor-paradas');
-            contenedor.innerHTML = ''; // Limpiar
+            contenedor.innerHTML = ''; 
             
             misParadas.forEach(p => {
-                // Colores chulos según la línea
-                let colorLinea = '#22d3ee'; // Defecto cyan
-                if(p.linea.toUpperCase() === 'X30') colorLinea = '#fb923c';
-                if(p.linea.toUpperCase() === 'L52') colorLinea = '#facc15';
+                let colorLinea = '#00FFFF'; // Defecto Cyan neón
+                if(p.linea.toUpperCase() === 'X30') colorLinea = '#FF4500'; // Naranja brillante
+                if(p.linea.toUpperCase() === 'L52') colorLinea = '#FFFF00'; // Amarillo neón
 
                 const div = document.createElement('div');
                 div.className = 'item-menu';
@@ -187,29 +216,34 @@
         function abrirParada(id) {
             paradaActiva = misParadas.find(p => p.id === id);
             
-            // Preparar la tarjeta visualmente
             document.getElementById('detalle-codigo').innerText = `CÓDIGO ${paradaActiva.codigo}`;
             document.getElementById('detalle-linea').innerText = paradaActiva.linea.toUpperCase();
             
-            // Cambiar color del botón y línea según la red
             const btn = document.getElementById('btn-actualizar');
             const badge = document.getElementById('detalle-linea');
+            
+            // Colores específicos para cada red o línea en el degradado
             if (paradaActiva.red === 'TMB') {
-                btn.style.background = 'linear-gradient(90deg, #2b70f0, #06b6d4)';
-                badge.style.background = 'linear-gradient(90deg, #2b70f0, #06b6d4)';
-                badge.style.color = '#fff'; btn.style.color = '#fff';
+                btn.style.background = 'linear-gradient(99deg, #00FFFF 0%, #007BFF 100%)'; // Cyan a Azul
+            } else if (paradaActiva.linea.toUpperCase() === 'L52') {
+                btn.style.background = 'linear-gradient(99deg, #FFFF00 0%, #FFD700 100%)'; // Amarillo Neón
+            } else if (paradaActiva.linea.toUpperCase() === 'X30') {
+                btn.style.background = 'linear-gradient(99deg, #FF4500 0%, #FF8C00 100%)'; // Naranja brillante
             } else {
-                btn.style.background = 'linear-gradient(90deg, #ff5100, #fb923c)';
-                badge.style.background = 'linear-gradient(90deg, #ff5100, #fb923c)';
-                badge.style.color = '#fff'; btn.style.color = '#fff';
+                btn.style.background = 'linear-gradient(99deg, #FF00FF 0%, #FF69B4 100%)'; // Fucsia por defecto para AMB
             }
+
+            badge.style.background = btn.style.background;
+            badge.style.color = '#ffffff'; 
+            btn.style.color = '#ffffff';
+            badge.style.textShadow = '0 1px 3px rgba(0,0,0,0.6)'; // Sombra más oscura para contraste
+            btn.style.textShadow = '0 1px 3px rgba(0,0,0,0.6)';
 
             document.querySelectorAll('.seccion-app').forEach(s => s.style.display = 'none');
             document.getElementById('vista-detalle').style.display = 'flex';
             
             buscarDatosBus();
             
-            // Auto-actualizar cada 30 segundos solo cuando la tarjeta está abierta
             if(timerActualizacion) clearInterval(timerActualizacion);
             timerActualizacion = setInterval(buscarDatosBus, 30000);
         }
@@ -229,7 +263,6 @@
             misParadas.push(nuevaParada);
             guardarEnMemoria();
             
-            // Limpiar formulario y volver
             document.getElementById('input-nombre').value = '';
             document.getElementById('input-linea').value = '';
             document.getElementById('input-codigo').value = '';
@@ -246,7 +279,7 @@
             }
         }
 
-        // 5. LÓGICA DE ACTUALIZACIÓN DE DATOS (TMB y AMB unificados)
+        // 5. LÓGICA DE ACTUALIZACIÓN DE DATOS
         function setEstadoCarga() {
             const tiempoEl = document.getElementById('detalle-tiempo');
             tiempoEl.classList.add('brillo-carga');
@@ -284,7 +317,7 @@
             barraEl.style.width = porcentaje + "%";
             
             if (min1 <= 3) { barraEl.classList.add("alerta-roja"); barraEl.style.backgroundColor = ""; } 
-            else { barraEl.classList.remove("alerta-roja"); barraEl.style.backgroundColor = "#4ade80"; }
+            else { barraEl.classList.remove("alerta-roja"); barraEl.style.backgroundColor = "#00FF00"; }
             
             if (min1 === 0) { tiempoEl.innerHTML = "¡AHORA!"; tiempoEl.classList.add("modo-ahora"); } 
             else { tiempoEl.innerHTML = min1 + '<span class="minutos-texto">minutos</span>'; tiempoEl.classList.remove("modo-ahora"); }
@@ -324,38 +357,125 @@
             setTimeout(() => { btn.innerText = original; btn.disabled = false; }, 800);
         }
 
-        // FUNCIÓN PARA COMPARTIR LA APP
         async function compartirApp() {
-            // Comprobamos si el móvil soporta compartir de forma nativa
             if (navigator.share) {
                 try {
                     await navigator.share({
-                        title: 'Mi Bus - Cosmic Edition',
-                        text: '¡Mira esta App para ver los tiempos del autobús en tiempo real!',
-                        url: window.location.href // Coge automáticamente tu enlace de Vercel/GitHub
+                        title: 'Mi Bus - Synthwave Edition',
+                        text: '¡Mira esta App retro-futurista para ver los tiempos del bus en tiempo real!',
+                        url: window.location.href 
                     });
                 } catch (error) {
                     console.log('Compartir cancelado');
                 }
             } else {
-                // Si lo abren desde un PC que no tiene menú de compartir, les copiamos el enlace
                 alert('Copia este enlace para compartir la app:\n' + window.location.href);
             }
         }
 
-        // 6. INICIALIZACIÓN Y FONDOS
-        function actualizarReloj() { document.getElementById('reloj').textContent = new Date().toLocaleTimeString(); }
+        // FONDO CANVAS NEÓN
         function crearFondo() {
-            const fondo = document.getElementById('fondo-textos');
-            for (let i = 0; i < 15; i++) {
-                const span = document.createElement('span'); span.className = 'mensaje-flotante'; span.innerText = 'MI BUS '.repeat(3);
-                span.style.top = (Math.random() * 100) + 'vh'; span.style.fontSize = (Math.random() * 3 + 1) + 'em';
-                span.style.animationDuration = (Math.random() * 15 + 15) + 's'; span.style.animationDelay = (Math.random() * -20) + 's';
-                fondo.appendChild(span);
+            const viejoFondo = document.getElementById('fondo-textos');
+            if (viejoFondo) viejoFondo.remove();
+
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100vw';
+            canvas.style.height = '100vh';
+            canvas.style.zIndex = '-2';
+            document.body.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            let w, h;
+
+            function ajustarTamaño() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
             }
+            window.addEventListener('resize', ajustarTamaño);
+            ajustarTamaño();
+
+            const colores = [
+                '#FF00FF', '#00FFFF', '#FFFF00', '#00FF00', 
+                '#8A2BE2', '#FF69B4', '#7FFFD4', '#FF4500' 
+            ];
+            const lineas = [];
+
+            for(let i = 0; i < 30; i++) {
+                lineas.push(crearRuta());
+            }
+
+            function crearRuta() {
+                return {
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 1.5 + 0.5), 
+                    vy: 0, 
+                    color: colores[Math.floor(Math.random() * colores.length)],
+                    grosor: Math.random() * 3 + 1.5,
+                    trazos: [],
+                    distanciaHastaGiro: Math.random() * 150 + 50
+                };
+            }
+
+            function animarMapa() {
+                ctx.fillStyle = 'rgba(2, 6, 23, 0.08)'; 
+                ctx.fillRect(0, 0, w, h);
+
+                lineas.forEach(l => {
+                    l.trazos.push({x: l.x, y: l.y});
+                    if(l.trazos.length > 40) l.trazos.shift(); 
+
+                    l.x += l.vx;
+                    l.y += l.vy;
+
+                    l.distanciaHastaGiro--;
+                    if(l.distanciaHastaGiro <= 0) {
+                        if(l.vx !== 0) { 
+                            l.vy = (Math.random() > 0.5 ? 1 : -1) * Math.abs(l.vx); 
+                            l.vx = 0; 
+                        } else { 
+                            l.vx = (Math.random() > 0.5 ? 1 : -1) * Math.abs(l.vy); 
+                            l.vy = 0; 
+                        }
+                        l.distanciaHastaGiro = Math.random() * 200 + 50;
+                    }
+
+                    if(l.x < 0) l.x = w; if(l.x > w) l.x = 0;
+                    if(l.y < 0) l.y = h; if(l.y > h) l.y = 0;
+
+                    ctx.beginPath();
+                    ctx.strokeStyle = l.color;
+                    ctx.lineWidth = l.grosor;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    
+                    if(l.trazos.length > 0) {
+                        ctx.moveTo(l.trazos[0].x, l.trazos[0].y);
+                        for(let i = 1; i < l.trazos.length; i++) {
+                            ctx.lineTo(l.trazos[i].x, l.trazos[i].y);
+                        }
+                        ctx.stroke();
+                    }
+                });
+                requestAnimationFrame(animarMapa);
+            }
+            animarMapa();
         }
 
-        // REGISTRO DEL SERVICE WORKER (PARA LA PWA)
+        // RELOJ GLOBAL
+        function actualizarReloj() {
+            const ahora = new Date();
+            const horas = String(ahora.getHours()).padStart(2, '0');
+            const minutos = String(ahora.getMinutes()).padStart(2, '0');
+            const segundos = String(ahora.getSeconds()).padStart(2, '0');
+            const relojEl = document.getElementById('reloj');
+            if(relojEl) relojEl.innerText = `${horas}:${minutos}:${segundos}`;
+        }
+        
+        // SERVICE WORKER
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(reg => console.log('PWA Lista')).catch(err => console.error('PWA Error', err));
