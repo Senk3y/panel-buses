@@ -1,0 +1,20 @@
+{
+  "name": "Mi Bus Cosmic",
+  "short_name": "Mi Bus",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "icons": [
+    {
+      "src": "icono_bus.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icono_bus.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

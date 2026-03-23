@@ -3,169 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Bus</title>
+    <title>Mi Bus - Cosmic Edition Pro</title>
     
+    <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icono_bus.png">
     <link rel="apple-touch-icon" href="icono_bus.png">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#020617">
 
     <style>
-        /* 1. CONFIGURACIÓN BASE Y FONDO */
+        /* MANTENEMOS TU ESTILO CÓSMICO INTACTO */
         * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; color: #ffffff; background: linear-gradient(135deg, #020617, #1e1b4b, #4c1d95, #831843, #1e1b4b, #020617); background-size: 400% 400%; animation: cosmicFlow 15s ease infinite; overflow-x: hidden; position: relative; transition: animation-duration 2s; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.15) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(219, 39, 119, 0.15) 0%, transparent 40%); z-index: -1; animation: pulseLights 8s ease-in-out infinite alternate; }
+        @keyframes cosmicFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes pulseLights { from { opacity: 0.5; transform: scale(1); } to { opacity: 1; transform: scale(1.2); } }
+        
+        .fondo-textos { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .mensaje-flotante { position: absolute; white-space: nowrap; font-weight: 900; color: rgba(255, 255, 255, 0.05); user-select: none; animation: moverTexto linear infinite; }
+        @keyframes moverTexto { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            color: #ffffff;
-            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #111827, #1e293b);
-            background-size: 400% 400%;
-            animation: auroraBackground 20s ease infinite;
-            overflow-x: hidden;
-        }
+        .reloj-global { font-size: 2.5em; color: #fff; margin: 10px 0 20px 0; font-family: 'Courier New', Courier, monospace; letter-spacing: 4px; text-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 0 0 30px rgba(124, 58, 237, 0.5); z-index: 10; }
 
-        @keyframes auroraBackground {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        .seccion-app { width: 100%; max-width: 500px; display: none; flex-direction: column; align-items: center; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .fondo-textos {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-        }
-
-        .mensaje-flotante {
-            position: absolute;
-            white-space: nowrap;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.03); 
-            user-select: none;
-            animation: moverTexto linear infinite;
-        }
-
-        @keyframes moverTexto {
-            from { transform: translateX(100vw); }
-            to { transform: translateX(-100%); }
-        }
-
-        /* 2. RELOJ GLOBAL */
-        .reloj-global {
-            font-size: 2.5em;
-            color: rgba(255, 255, 255, 0.9);
-            margin: 10px 0 20px 0;
-            font-family: monospace;
-            letter-spacing: 4px;
-            text-shadow: 0 0 20px rgba(255,255,255,0.2);
-            z-index: 10;
-        }
-
-        /* 3. ESTRUCTURA DE NAVEGACIÓN */
-        .seccion-app {
-            width: 100%;
-            max-width: 500px;
-            display: none; 
-            flex-direction: column;
-            align-items: center;
-            animation: fadeIn 0.4s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 4. MENÚ PRINCIPAL */
-        .lista-menu {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .item-menu {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .item-menu:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.15); }
+        .lista-menu { width: 100%; display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
+        .item-menu { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); padding: 15px 20px; border-radius: 22px; display: flex; align-items: center; transition: all 0.3s; backdrop-filter: blur(12px); position: relative; }
+        .item-menu-click { flex-grow: 1; display: flex; align-items: center; cursor: pointer; }
+        .item-menu:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.2); }
         .texto-item { flex-grow: 1; display: flex; flex-direction: column; margin-left: 15px; }
         .nombre-parada { font-weight: bold; font-size: 1.1em; color: #fff; }
-        .lineas-badge { font-size: 0.8em; margin-top: 4px; font-weight: bold; text-transform: uppercase; }
+        .lineas-badge { font-size: 0.8em; margin-top: 4px; font-weight: bold; text-transform: uppercase; color: #22d3ee; }
 
-        /* Colores del menú */
-        .badge-v5 { color: #4facfe; }
-        .badge-x30 { color: #ff5100; }
-        .badge-l52 { color: #ffb703; }
+        .btn-borrar { background: none; border: none; color: #ef4444; font-size: 1.2em; cursor: pointer; padding: 10px; opacity: 0.6; transition: 0.3s; }
+        .btn-borrar:hover { opacity: 1; transform: scale(1.1); }
 
-        /* 5. TARJETAS Y DETALLES */
-        .tarjeta {
-            background-color: rgba(30, 30, 30, 0.7); 
-            backdrop-filter: blur(15px);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            text-align: center;
-            width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .linea {
-            font-size: 2.5em; font-weight: bold; padding: 5px 25px;
-            border-radius: 12px; margin-bottom: 15px; display: inline-block;
-        }
-        .linea-tmb { background-color: #2b70f0; }
-        .linea-amb { background-color: #ff5100; }
-        .linea-l52 { background-color: #ffb703; color: #000; } /* Letra negra para que contraste bien con el amarillo/naranja */
-
-        .tiempo { font-size: 3.5em; font-weight: bold; color: #4caf50; }
-        .minutos-texto { font-size: 0.4em; color: #888; display: block; }
-
-        .progreso-container {
-            width: 100%; height: 8px; background: rgba(255,255,255,0.1);
-            border-radius: 10px; margin: 20px 0; overflow: hidden;
-        }
-        .progreso-barra { height: 100%; width: 0%; background: #4caf50; transition: width 1s; }
-
-        /* 6. BOTONES */
-        .btn-volver {
-            align-self: flex-start; background: none; border: none;
-            color: #aaa; cursor: pointer; font-size: 1.1em; margin-bottom: 15px;
-        }
-
-        button.btn-accion {
-            padding: 15px 35px; font-size: 1em; color: white;
-            border: none; border-radius: 50px;
-            font-weight: bold; text-transform: uppercase; width: 100%;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: all 0.3s;
-        }
+        .tarjeta { background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); padding: 30px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); text-align: center; width: 100%; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; }
+        .linea { font-size: 2.2em; font-weight: 900; padding: 8px 30px; border-radius: 15px; margin-bottom: 15px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.3); background: linear-gradient(90deg, #2b70f0, #06b6d4); }
         
-        button.btn-accion:disabled { background: #555 !important; color: #ccc !important; cursor: not-allowed; }
+        .tiempo { font-size: 4em; font-weight: 900; color: #4ade80; text-shadow: 0 0 20px rgba(74, 222, 128, 0.3); transition: all 0.3s; }
+        .minutos-texto { font-size: 0.4em; color: #94a3b8; display: block; text-transform: uppercase; letter-spacing: 2px; }
+        .brillo-carga { animation: pulseCarga 0.8s infinite alternate; color: #64748b !important; text-shadow: none !important; }
+        @keyframes pulseCarga { from { opacity: 0.3; } to { opacity: 0.8; } }
 
-        @media (max-width: 600px) {
-            .reloj-global { font-size: 2em; margin-top: 0; }
-            button.btn-accion { position: fixed; bottom: 25px; left: 5%; width: 90%; }
-        }
+        .progreso-container { width: 100%; height: 10px; background: rgba(255,255,255,0.05); border-radius: 20px; margin: 25px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+        .progreso-barra { height: 100%; width: 0%; background: #4ade80; transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        .alerta-roja { animation: parpadeo 1s infinite; }
-        @keyframes parpadeo { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .modo-ahora { animation: arcoiris 1.5s linear infinite; }
-        @keyframes arcoiris { 0% { color: #ff5252; } 33% { color: #ffeb3b; } 66% { color: #4caf50; } 100% { color: #ff5252; } }
+        .estado-bus { height: 20px; opacity: 0.9; font-size: 0.95em; margin-bottom: 5px; color: #cbd5e1; font-weight: bold;}
+        .estado-servidor { height: 15px; font-size: 0.7em; margin-top: 10px; opacity: 0.4; }
+
+        .btn-volver { align-self: flex-start; background: rgba(255,255,255,0.1); border: none; color: #fff; cursor: pointer; font-size: 0.9em; padding: 8px 15px; border-radius: 10px; margin-bottom: 15px; }
+        button.btn-accion { padding: 18px; font-size: 1em; color: white; border: none; border-radius: 20px; font-weight: 900; text-transform: uppercase; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.4); transition: all 0.3s; letter-spacing: 1px; background: linear-gradient(90deg, #2b70f0, #06b6d4); cursor: pointer;}
+        button.btn-accion:active { transform: translateY(3px); }
+        button.btn-accion:disabled { opacity: 0.5; filter: grayscale(1); }
+
+        /* FORMULARIO AÑADIR PARADA */
+        .formulario { display: flex; flex-direction: column; gap: 15px; width: 100%; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .formulario input, .formulario select { padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; font-size: 1em; }
+        .formulario input::placeholder { color: rgba(255,255,255,0.5); }
+        .formulario label { font-size: 0.8em; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: -10px; }
+
+        .alerta-roja { animation: flashRed 1s infinite; }
+        @keyframes flashRed { 0%, 100% { background-color: #ef4444; } 50% { background-color: #7f1d1d; } }
+        .modo-ahora { animation: rainbowText 2s linear infinite; }
+        @keyframes rainbowText { 0% { color: #f87171; } 33% { color: #fbbf24; } 66% { color: #34d399; } 100% { color: #f87171; } }
     </style>
 </head>
 <body>
@@ -174,219 +75,276 @@
     <div id="reloj" class="reloj-global">00:00:00</div>
 
     <div id="vista-menu" class="seccion-app" style="display: flex;">
-        <h3 style="margin: 0; opacity: 0.6; font-weight: normal; align-self: flex-start; margin-left: 5px;">MIS PARADAS</h3>
+        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0; opacity: 0.8; font-weight: 800; letter-spacing: 1px;">MIS PARADAS</h3>
+            <button onclick="mostrarFormulario()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; cursor: pointer;">+ AÑADIR</button>
+        </div>
         
-        <div class="lista-menu">
-            <div class="item-menu" onclick="navegarA('parada-v5')">
-                <span style="font-size: 1.5em;">📍</span>
-                <div class="texto-item">
-                    <span class="nombre-parada">C. Bell-lloc - Berlín</span>
-                    <span class="lineas-badge badge-v5">Línea V5</span>
-                </div>
-                <span style="opacity: 0.3;">❯</span>
+        <div class="lista-menu" id="contenedor-paradas">
             </div>
+    </div>
 
-            <div class="item-menu" onclick="navegarA('parada-x30')">
-                <span style="font-size: 1.5em;">📍</span>
-                <div class="texto-item">
-                    <span class="nombre-parada">Pl. Reina Maria Cristina</span>
-                    <span class="lineas-badge badge-x30">Línea X30</span>
-                </div>
-                <span style="opacity: 0.3;">❯</span>
-            </div>
-
-            <div class="item-menu" onclick="navegarA('parada-l52')">
-                <span style="font-size: 1.5em;">📍</span>
-                <div class="texto-item">
-                    <span class="nombre-parada">Major - Mercat</span>
-                    <span class="lineas-badge badge-l52">Línea L52</span>
-                </div>
-                <span style="opacity: 0.3;">❯</span>
-            </div>
+    <div id="vista-formulario" class="seccion-app">
+        <button class="btn-volver" onclick="irAlMenu()">❮ CANCELAR</button>
+        <h3 style="align-self: flex-start; margin-top: 0;">NUEVA PARADA</h3>
+        <div class="formulario">
+            <label>Nombre personalizado (ej. Casa, Trabajo)</label>
+            <input type="text" id="input-nombre" placeholder="Mi parada">
+            
+            <label>Línea (ej. V5, X30)</label>
+            <input type="text" id="input-linea" placeholder="V5">
+            
+            <label>Código de la Parada (ej. 3521)</label>
+            <input type="text" id="input-codigo" placeholder="Número de parada">
+            
+            <label>Red de Autobuses</label>
+            <select id="input-red">
+                <option value="TMB">TMB (Buses rojos de Barcelona)</option>
+                <option value="AMB">AMB (Buses amarillos/metropolitanos)</option>
+            </select>
+            
+            <button class="btn-accion" style="margin-top: 10px;" onclick="guardarParada()">GUARDAR PARADA</button>
         </div>
     </div>
 
-    <div id="parada-v5" class="seccion-app">
-        <button class="btn-volver" onclick="irAlMenu()">❮ Menú Principal</button>
+    <div id="vista-detalle" class="seccion-app">
+        <button class="btn-volver" onclick="irAlMenu()">❮ VOLVER</button>
         <div class="tarjeta">
-            <div style="font-size: 0.9em; opacity: 0.5; margin-bottom: 10px;">PARADA 3521</div>
-            <div class="linea linea-tmb">V5</div>
-            <div class="tiempo" id="tiempo-v5">--</div>
-            <div class="progreso-container"><div id="barra-v5" class="progreso-barra"></div></div>
-            <div id="siguiente-v5" style="opacity: 0.7;">Consultando TMB...</div>
+            <div id="detalle-codigo" style="font-size: 0.8em; opacity: 0.5; margin-bottom: 10px; letter-spacing: 2px;">CÓDIGO --</div>
+            <div id="detalle-linea" class="linea">--</div>
+            <div class="tiempo" id="detalle-tiempo">--</div>
+            <div class="progreso-container"><div id="detalle-barra" class="progreso-barra"></div></div>
+            <div id="detalle-siguiente" class="estado-bus">Esperando conexión...</div>
+            <div id="detalle-info" class="estado-servidor"></div>
         </div>
-        <button id="btn-v5" class="btn-accion" style="background-color: #2b70f0;" onclick="forzarActualizacion('v5')">Actualizar Ahora</button>
-    </div>
-
-    <div id="parada-x30" class="seccion-app">
-        <button class="btn-volver" onclick="irAlMenu()">❮ Menú Principal</button>
-        <div class="tarjeta">
-            <div style="font-size: 0.9em; opacity: 0.5; margin-bottom: 10px;">PARADA 237</div>
-            <div class="linea linea-amb">X30</div>
-            <div class="tiempo" id="tiempo-x30">--</div>
-            <div class="progreso-container"><div id="barra-x30" class="progreso-barra"></div></div>
-            <div id="siguiente-x30" style="opacity: 0.7;">Conectando AMB...</div>
-            <div id="info-amb" style="font-size: 0.7em; margin-top: 15px; opacity: 0.4;"></div>
-        </div>
-        <button id="btn-x30" class="btn-accion" style="background-color: #ff5100;" onclick="forzarActualizacion('x30')">Actualizar Ahora</button>
-    </div>
-
-    <div id="parada-l52" class="seccion-app">
-        <button class="btn-volver" onclick="irAlMenu()">❮ Menú Principal</button>
-        <div class="tarjeta">
-            <div style="font-size: 0.9em; opacity: 0.5; margin-bottom: 10px;">PARADA 002275</div>
-            <div class="linea linea-l52">L52</div>
-            <div class="tiempo" id="tiempo-l52">--</div>
-            <div class="progreso-container"><div id="barra-l52" class="progreso-barra"></div></div>
-            <div id="siguiente-l52" style="opacity: 0.7;">Conectando Servidor...</div>
-            <div id="info-l52" style="font-size: 0.7em; margin-top: 15px; opacity: 0.4;"></div>
-        </div>
-        <button id="btn-l52" class="btn-accion" style="background-color: #ffb703; color: #000;" onclick="forzarActualizacion('l52')">Actualizar Ahora</button>
+        <button id="btn-actualizar" class="btn-accion" onclick="forzarActualizacion()">ACTUALIZAR DATOS</button>
     </div>
 
     <script>
+        // CONFIGURACIÓN API
         const APP_ID = "05f36d2d"; 
         const APP_KEY = "7337db37d02d34777f38d728ce1c1903"; 
-        const PARADA_TMB = "3521"; 
 
-        // NAVEGACIÓN
-        function navegarA(id) {
-            document.querySelectorAll('.seccion-app').forEach(s => s.style.display = 'none');
-            document.getElementById(id).style.display = 'flex';
-            if(id === 'parada-v5') obtenerTMB();
-            if(id === 'parada-x30') obtenerAMB();
-            if(id === 'parada-l52') obtenerL52();
+        // ESTADO GLOBAL
+        let paradaActiva = null; // Guardará qué parada estamos viendo
+        let timerActualizacion = null;
+
+        // 1. CARGAR PARADAS DESDE LA MEMORIA (O poner las 3 de ejemplo)
+        let misParadas = JSON.parse(localStorage.getItem('paradasGuardadas'));
+        if (!misParadas || misParadas.length === 0) {
+            misParadas = [
+                { id: 1, nombre: 'C. Bell-lloc - Berlín', linea: 'V5', codigo: '3521', red: 'TMB' },
+                { id: 2, nombre: 'Pl. Reina Maria Cristina', linea: 'X30', codigo: '237', red: 'AMB' },
+                { id: 3, nombre: 'Major - Mercat', linea: 'L52', codigo: '002275', red: 'AMB' }
+            ];
+            guardarEnMemoria();
         }
 
+        // 2. RENDERIZAR MENÚ
+        function renderizarMenu() {
+            const contenedor = document.getElementById('contenedor-paradas');
+            contenedor.innerHTML = ''; // Limpiar
+            
+            misParadas.forEach(p => {
+                // Colores chulos según la línea
+                let colorLinea = '#22d3ee'; // Defecto cyan
+                if(p.linea.toUpperCase() === 'X30') colorLinea = '#fb923c';
+                if(p.linea.toUpperCase() === 'L52') colorLinea = '#facc15';
+
+                const div = document.createElement('div');
+                div.className = 'item-menu';
+                div.innerHTML = `
+                    <div class="item-menu-click" onclick="abrirParada(${p.id})">
+                        <span style="font-size: 1.8em; filter: drop-shadow(0 0 10px ${colorLinea});">📍</span>
+                        <div class="texto-item">
+                            <span class="nombre-parada">${p.nombre}</span>
+                            <span class="lineas-badge" style="color: ${colorLinea}">Línea ${p.linea} (${p.red})</span>
+                        </div>
+                    </div>
+                    <button class="btn-borrar" onclick="borrarParada(${p.id})">✖</button>
+                `;
+                contenedor.appendChild(div);
+            });
+        }
+
+        // 3. NAVEGACIÓN
         function irAlMenu() {
             document.querySelectorAll('.seccion-app').forEach(s => s.style.display = 'none');
             document.getElementById('vista-menu').style.display = 'flex';
+            document.body.style.animationDuration = '15s';
+            paradaActiva = null;
+            if(timerActualizacion) clearInterval(timerActualizacion);
         }
 
-        // LÓGICA DE INTERFAZ
-        function actualizarInterfazBus(minutos, idTiempo, idBarra) {
-            const tiempoEl = document.getElementById(idTiempo);
-            const barraEl = document.getElementById(idBarra);
-            if (minutos === null || minutos === undefined) {
-                tiempoEl.innerHTML = "--";
-                barraEl.style.width = "0%";
+        function mostrarFormulario() {
+            document.querySelectorAll('.seccion-app').forEach(s => s.style.display = 'none');
+            document.getElementById('vista-formulario').style.display = 'flex';
+        }
+
+        function abrirParada(id) {
+            paradaActiva = misParadas.find(p => p.id === id);
+            
+            // Preparar la tarjeta visualmente
+            document.getElementById('detalle-codigo').innerText = `CÓDIGO ${paradaActiva.codigo}`;
+            document.getElementById('detalle-linea').innerText = paradaActiva.linea.toUpperCase();
+            
+            // Cambiar color del botón y línea según la red
+            const btn = document.getElementById('btn-actualizar');
+            const badge = document.getElementById('detalle-linea');
+            if (paradaActiva.red === 'TMB') {
+                btn.style.background = 'linear-gradient(90deg, #2b70f0, #06b6d4)';
+                badge.style.background = 'linear-gradient(90deg, #2b70f0, #06b6d4)';
+                badge.style.color = '#fff'; btn.style.color = '#fff';
+            } else {
+                btn.style.background = 'linear-gradient(90deg, #ff5100, #fb923c)';
+                badge.style.background = 'linear-gradient(90deg, #ff5100, #fb923c)';
+                badge.style.color = '#fff'; btn.style.color = '#fff';
+            }
+
+            document.querySelectorAll('.seccion-app').forEach(s => s.style.display = 'none');
+            document.getElementById('vista-detalle').style.display = 'flex';
+            
+            buscarDatosBus();
+            
+            // Auto-actualizar cada 30 segundos solo cuando la tarjeta está abierta
+            if(timerActualizacion) clearInterval(timerActualizacion);
+            timerActualizacion = setInterval(buscarDatosBus, 30000);
+        }
+
+        // 4. LÓGICA DE AÑADIR/BORRAR PARADAS
+        function guardarEnMemoria() { localStorage.setItem('paradasGuardadas', JSON.stringify(misParadas)); }
+
+        function guardarParada() {
+            const nombre = document.getElementById('input-nombre').value;
+            const linea = document.getElementById('input-linea').value;
+            const codigo = document.getElementById('input-codigo').value;
+            const red = document.getElementById('input-red').value;
+
+            if(!nombre || !linea || !codigo) { alert("¡Rellena todos los campos!"); return; }
+
+            const nuevaParada = { id: Date.now(), nombre, linea: linea.toUpperCase(), codigo, red };
+            misParadas.push(nuevaParada);
+            guardarEnMemoria();
+            
+            // Limpiar formulario y volver
+            document.getElementById('input-nombre').value = '';
+            document.getElementById('input-linea').value = '';
+            document.getElementById('input-codigo').value = '';
+            
+            renderizarMenu();
+            irAlMenu();
+        }
+
+        function borrarParada(id) {
+            if(confirm("¿Seguro que quieres borrar esta parada?")) {
+                misParadas = misParadas.filter(p => p.id !== id);
+                guardarEnMemoria();
+                renderizarMenu();
+            }
+        }
+
+        // 5. LÓGICA DE ACTUALIZACIÓN DE DATOS (TMB y AMB unificados)
+        function setEstadoCarga() {
+            const tiempoEl = document.getElementById('detalle-tiempo');
+            tiempoEl.classList.add('brillo-carga');
+            tiempoEl.innerHTML = '88'; 
+            document.getElementById('detalle-siguiente').innerText = "Buscando en el cosmos...";
+        }
+
+        function procesarResultados(min1, min2) {
+            const tiempoEl = document.getElementById('detalle-tiempo');
+            const barraEl = document.getElementById('detalle-barra');
+            const sigEl = document.getElementById('detalle-siguiente');
+            
+            tiempoEl.classList.remove('brillo-carga');
+
+            if (min1 === null || min1 === undefined) {
+                tiempoEl.innerHTML = "--"; barraEl.style.width = "0%";
+                sigEl.innerText = "Sin buses próximos";
+                document.body.style.animationDuration = '15s';
                 return;
             }
-            let porcentaje = Math.max(0, 100 - (minutos * 6.6));
-            barraEl.style.width = porcentaje + "%";
-            barraEl.style.backgroundColor = minutos <= 3 ? "#ff5252" : "#4caf50";
-            if (minutos <= 3) barraEl.classList.add("alerta-roja"); else barraEl.classList.remove("alerta-roja");
-            
-            if (minutos === 0) {
-                tiempoEl.innerHTML = "¡Ahora!";
-                tiempoEl.classList.add("modo-ahora");
+
+            if (min1 <= 3) document.body.style.animationDuration = '3s'; 
+            else if (min1 <= 10) document.body.style.animationDuration = '8s'; 
+            else document.body.style.animationDuration = '15s'; 
+
+            if (min1 <= 3 && navigator.vibrate) navigator.vibrate([200, 100, 200]); 
+
+            if (min2 !== null && min2 !== undefined) {
+                sigEl.innerHTML = `Próximo bus en: <span style="color:#fff;">${min2} min</span>`;
             } else {
-                tiempoEl.innerHTML = minutos + '<span class="minutos-texto">minutos</span>';
-                tiempoEl.classList.remove("modo-ahora");
+                sigEl.innerText = "No hay más buses en cola";
+            }
+
+            let porcentaje = Math.max(0, 100 - (min1 * 6.6));
+            barraEl.style.width = porcentaje + "%";
+            
+            if (min1 <= 3) { barraEl.classList.add("alerta-roja"); barraEl.style.backgroundColor = ""; } 
+            else { barraEl.classList.remove("alerta-roja"); barraEl.style.backgroundColor = "#4ade80"; }
+            
+            if (min1 === 0) { tiempoEl.innerHTML = "¡AHORA!"; tiempoEl.classList.add("modo-ahora"); } 
+            else { tiempoEl.innerHTML = min1 + '<span class="minutos-texto">minutos</span>'; tiempoEl.classList.remove("modo-ahora"); }
+        }
+
+        async function buscarDatosBus() {
+            if(!paradaActiva) return;
+            setEstadoCarga();
+            
+            try {
+                if (paradaActiva.red === 'TMB') {
+                    const url = `https://api.tmb.cat/v1/ibus/stops/${paradaActiva.codigo}?app_id=${APP_ID}&app_key=${APP_KEY}`;
+                    const res = await fetch(url);
+                    const datos = await res.json();
+                    const buses = datos.data?.ibus.filter(b => b.line.toUpperCase() === paradaActiva.linea) || [];
+                    procesarResultados(buses[0]?.["t-in-min"], buses[1]?.["t-in-min"]);
+                } else {
+                    const res = await fetch(`https://mi-bus.onrender.com/api/amb?parada=${paradaActiva.codigo}`);
+                    const datos = await res.json();
+                    if (datos.status === "ok") {
+                        const buses = datos.buses.filter(b => b.linea.toUpperCase().includes(paradaActiva.linea));
+                        procesarResultados(buses[0]?.minutos, buses[1]?.minutos);
+                    } else throw new Error("AMB Error");
+                }
+                document.getElementById('detalle-info').innerText = "Servidor: Online ✅";
+            } catch (e) {
+                document.getElementById('detalle-info').innerText = "⚠️ Error de conexión";
+                procesarResultados(null, null);
             }
         }
 
-        // PETICIÓN V5 (TMB)
-        async function obtenerTMB() {
-            try {
-                const url = `https://api.tmb.cat/v1/ibus/stops/${PARADA_TMB}?app_id=${APP_ID}&app_key=${APP_KEY}`;
-                const res = await fetch(url);
-                const datos = await res.json();
-                const busV5 = datos.data?.ibus.find(b => b.line === "V5");
-                if (busV5) {
-                    actualizarInterfazBus(busV5["t-in-min"], 'tiempo-v5', 'barra-v5');
-                    document.getElementById('siguiente-v5').innerText = "Información en tiempo real";
-                } else {
-                    actualizarInterfazBus(null, 'tiempo-v5', 'barra-v5');
-                    document.getElementById('siguiente-v5').innerText = "Sin buses a la vista";
-                }
-            } catch (e) { document.getElementById('siguiente-v5').innerText = "Error TMB"; }
+        async function forzarActualizacion() {
+            const btn = document.getElementById('btn-actualizar');
+            const original = btn.innerText;
+            btn.innerText = "SINCRONIZANDO..."; btn.disabled = true;
+            await buscarDatosBus();
+            setTimeout(() => { btn.innerText = original; btn.disabled = false; }, 800);
         }
 
-        // PETICIÓN X30 (AMB - Proxy)
-        async function obtenerAMB() {
-            try {
-                // Suponemos que tu servidor proxy acepta el parámetro 'parada'
-                const res = await fetch("https://mi-bus.onrender.com/api/amb?parada=237");
-                const datos = await res.json();
-                if (datos.status === "ok") {
-                    const busX30 = datos.buses.find(b => b.linea.includes("X30"));
-                    if (busX30) {
-                        actualizarInterfazBus(busX30.minutos, 'tiempo-x30', 'barra-x30');
-                        document.getElementById('info-amb').innerText = "Servidor Online ✅";
-                    } else {
-                        actualizarInterfazBus(null, 'tiempo-x30', 'barra-x30');
-                        document.getElementById('siguiente-x30').innerText = "Sin buses a la vista";
-                    }
-                }
-            } catch (e) { document.getElementById('info-amb').innerText = "⚠️ Error Servidor"; }
-        }
-
-        // PETICIÓN L52 (AMB - Modo Normal)
-        async function obtenerL52() {
-            try {
-                const res = await fetch("https://mi-bus.onrender.com/api/amb?parada=002275");
-                const datos = await res.json();
-                if (datos.status === "ok") {
-                    // Ahora buscamos literalmente "L52" porque el servidor ya lo traduce
-                    const busL52 = datos.buses.find(b => b.linea.includes("L52"));
-                    if (busL52) {
-                        actualizarInterfazBus(busL52.minutos, 'tiempo-l52', 'barra-l52');
-                        document.getElementById('info-l52').innerText = "Servidor Online ✅";
-                        document.getElementById('siguiente-l52').innerText = "Información en tiempo real";
-                    } else {
-                        actualizarInterfazBus(null, 'tiempo-l52', 'barra-l52');
-                        document.getElementById('siguiente-l52').innerText = "Sin buses a la vista";
-                    }
-                }
-            } catch (e) { document.getElementById('info-l52').innerText = "⚠️ Error Servidor"; }
-        }
-
-        // BOTONES DE ACTUALIZAR
-        async function forzarActualizacion(linea) {
-            const btn = document.getElementById(`btn-${linea}`);
-            const textoOriginal = btn.innerText;
-            btn.innerText = "Actualizando...";
-            btn.disabled = true;
-
-            if(linea === 'v5') await obtenerTMB();
-            if(linea === 'x30') await obtenerAMB();
-            if(linea === 'l52') await obtenerL52();
-            
-            setTimeout(() => {
-                btn.innerText = textoOriginal;
-                btn.disabled = false;
-            }, 800);
-        }
-
-        function actualizarReloj() {
-            document.getElementById('reloj').textContent = new Date().toLocaleTimeString();
-        }
-
+        // 6. INICIALIZACIÓN Y FONDOS
+        function actualizarReloj() { document.getElementById('reloj').textContent = new Date().toLocaleTimeString(); }
         function crearFondo() {
             const fondo = document.getElementById('fondo-textos');
-            for (let i = 0; i < 12; i++) {
-                const span = document.createElement('span');
-                span.className = 'mensaje-flotante';
-                span.innerText = 'MI BUS '.repeat(4);
-                span.style.top = (Math.random() * 100) + 'vh';
-                span.style.fontSize = (Math.random() * 2 + 1) + 'em';
-                span.style.animationDuration = (Math.random() * 20 + 20) + 's';
-                span.style.animationDelay = (Math.random() * -20) + 's';
+            for (let i = 0; i < 15; i++) {
+                const span = document.createElement('span'); span.className = 'mensaje-flotante'; span.innerText = 'MI BUS '.repeat(3);
+                span.style.top = (Math.random() * 100) + 'vh'; span.style.fontSize = (Math.random() * 3 + 1) + 'em';
+                span.style.animationDuration = (Math.random() * 15 + 15) + 's'; span.style.animationDelay = (Math.random() * -20) + 's';
                 fondo.appendChild(span);
             }
         }
 
+        // REGISTRO DEL SERVICE WORKER (PARA LA PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(reg => console.log('PWA Lista')).catch(err => console.error('PWA Error', err));
+            });
+        }
+
         window.onload = () => {
+            renderizarMenu();
             crearFondo();
             actualizarReloj();
             setInterval(actualizarReloj, 1000);
-            
-            setInterval(() => {
-                obtenerTMB();
-                obtenerAMB();
-                obtenerL52();
-            }, 30000);
         };
     </script>
 </body>
