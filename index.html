@@ -54,7 +54,7 @@
             to { transform: translateX(-100%); }
         }
 
-        /* 2. RELOJ GLOBAL (SIEMPRE VISIBLE) */
+        /* 2. RELOJ GLOBAL */
         .reloj-global {
             font-size: 2.5em;
             color: rgba(255, 255, 255, 0.9);
@@ -65,11 +65,11 @@
             z-index: 10;
         }
 
-        /* 3. ESTRUCTURA DE NAVEGACIÓN (VISTAS) */
+        /* 3. ESTRUCTURA DE NAVEGACIÓN */
         .seccion-app {
             width: 100%;
             max-width: 500px;
-            display: none; /* Se controla por JS */
+            display: none; 
             flex-direction: column;
             align-items: center;
             animation: fadeIn 0.4s ease;
@@ -80,7 +80,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 4. ESTILOS DEL MENÚ PRINCIPAL */
+        /* 4. MENÚ PRINCIPAL */
         .lista-menu {
             width: 100%;
             display: flex;
@@ -102,10 +102,14 @@
         }
 
         .item-menu:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.15); }
-
         .texto-item { flex-grow: 1; display: flex; flex-direction: column; margin-left: 15px; }
         .nombre-parada { font-weight: bold; font-size: 1.1em; color: #fff; }
-        .lineas-badge { font-size: 0.8em; color: #4facfe; margin-top: 4px; font-weight: bold; text-transform: uppercase; }
+        .lineas-badge { font-size: 0.8em; margin-top: 4px; font-weight: bold; text-transform: uppercase; }
+
+        /* Colores del menú */
+        .badge-v5 { color: #4facfe; }
+        .badge-x30 { color: #ff5100; }
+        .badge-l52 { color: #ffb703; }
 
         /* 5. TARJETAS Y DETALLES */
         .tarjeta {
@@ -126,6 +130,7 @@
         }
         .linea-tmb { background-color: #2b70f0; }
         .linea-amb { background-color: #ff5100; }
+        .linea-l52 { background-color: #ffb703; color: #000; } /* Letra negra para que contraste bien con el amarillo/naranja */
 
         .tiempo { font-size: 3.5em; font-weight: bold; color: #4caf50; }
         .minutos-texto { font-size: 0.4em; color: #888; display: block; }
@@ -136,7 +141,7 @@
         }
         .progreso-barra { height: 100%; width: 0%; background: #4caf50; transition: width 1s; }
 
-        /* 6. BOTONES DE ACCIÓN */
+        /* 6. BOTONES */
         .btn-volver {
             align-self: flex-start; background: none; border: none;
             color: #aaa; cursor: pointer; font-size: 1.1em; margin-bottom: 15px;
@@ -144,13 +149,13 @@
 
         button.btn-accion {
             padding: 15px 35px; font-size: 1em; color: white;
-            background: #2b70f0; border: none; border-radius: 50px;
+            border: none; border-radius: 50px;
             font-weight: bold; text-transform: uppercase; width: 100%;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             transition: all 0.3s;
         }
         
-        button.btn-accion:disabled { background: #555; cursor: not-allowed; }
+        button.btn-accion:disabled { background: #555 !important; color: #ccc !important; cursor: not-allowed; }
 
         @media (max-width: 600px) {
             .reloj-global { font-size: 2em; margin-top: 0; }
@@ -166,7 +171,6 @@
 <body>
 
     <div id="fondo-textos" class="fondo-textos"></div>
-
     <div id="reloj" class="reloj-global">00:00:00</div>
 
     <div id="vista-menu" class="seccion-app" style="display: flex;">
@@ -177,7 +181,7 @@
                 <span style="font-size: 1.5em;">📍</span>
                 <div class="texto-item">
                     <span class="nombre-parada">C. Bell-lloc - Berlín</span>
-                    <span class="lineas-badge">Línea V5</span>
+                    <span class="lineas-badge badge-v5">Línea V5</span>
                 </div>
                 <span style="opacity: 0.3;">❯</span>
             </div>
@@ -186,7 +190,16 @@
                 <span style="font-size: 1.5em;">📍</span>
                 <div class="texto-item">
                     <span class="nombre-parada">Pl. Reina Maria Cristina</span>
-                    <span class="lineas-badge">Línea X30</span>
+                    <span class="lineas-badge badge-x30">Línea X30</span>
+                </div>
+                <span style="opacity: 0.3;">❯</span>
+            </div>
+
+            <div class="item-menu" onclick="navegarA('parada-l52')">
+                <span style="font-size: 1.5em;">📍</span>
+                <div class="texto-item">
+                    <span class="nombre-parada">Major - Mercat</span>
+                    <span class="lineas-badge badge-l52">Línea L52</span>
                 </div>
                 <span style="opacity: 0.3;">❯</span>
             </div>
@@ -202,7 +215,7 @@
             <div class="progreso-container"><div id="barra-v5" class="progreso-barra"></div></div>
             <div id="siguiente-v5" style="opacity: 0.7;">Consultando TMB...</div>
         </div>
-        <button id="btn-v5" class="btn-accion" onclick="forzarActualizacion('v5')">Actualizar Ahora</button>
+        <button id="btn-v5" class="btn-accion" style="background-color: #2b70f0;" onclick="forzarActualizacion('v5')">Actualizar Ahora</button>
     </div>
 
     <div id="parada-x30" class="seccion-app">
@@ -218,6 +231,19 @@
         <button id="btn-x30" class="btn-accion" style="background-color: #ff5100;" onclick="forzarActualizacion('x30')">Actualizar Ahora</button>
     </div>
 
+    <div id="parada-l52" class="seccion-app">
+        <button class="btn-volver" onclick="irAlMenu()">❮ Menú Principal</button>
+        <div class="tarjeta">
+            <div style="font-size: 0.9em; opacity: 0.5; margin-bottom: 10px;">PARADA 002275</div>
+            <div class="linea linea-l52">L52</div>
+            <div class="tiempo" id="tiempo-l52">--</div>
+            <div class="progreso-container"><div id="barra-l52" class="progreso-barra"></div></div>
+            <div id="siguiente-l52" style="opacity: 0.7;">Conectando Servidor...</div>
+            <div id="info-l52" style="font-size: 0.7em; margin-top: 15px; opacity: 0.4;"></div>
+        </div>
+        <button id="btn-l52" class="btn-accion" style="background-color: #ffb703; color: #000;" onclick="forzarActualizacion('l52')">Actualizar Ahora</button>
+    </div>
+
     <script>
         const APP_ID = "05f36d2d"; 
         const APP_KEY = "7337db37d02d34777f38d728ce1c1903"; 
@@ -229,6 +255,7 @@
             document.getElementById(id).style.display = 'flex';
             if(id === 'parada-v5') obtenerTMB();
             if(id === 'parada-x30') obtenerAMB();
+            if(id === 'parada-l52') obtenerL52();
         }
 
         function irAlMenu() {
@@ -236,11 +263,11 @@
             document.getElementById('vista-menu').style.display = 'flex';
         }
 
-        // LÓGICA DE BUS
+        // LÓGICA DE INTERFAZ
         function actualizarInterfazBus(minutos, idTiempo, idBarra) {
             const tiempoEl = document.getElementById(idTiempo);
             const barraEl = document.getElementById(idBarra);
-            if (minutos === null) {
+            if (minutos === null || minutos === undefined) {
                 tiempoEl.innerHTML = "--";
                 barraEl.style.width = "0%";
                 return;
@@ -259,6 +286,7 @@
             }
         }
 
+        // PETICIÓN V5 (TMB)
         async function obtenerTMB() {
             try {
                 const url = `https://api.tmb.cat/v1/ibus/stops/${PARADA_TMB}?app_id=${APP_ID}&app_key=${APP_KEY}`;
@@ -268,36 +296,65 @@
                 if (busV5) {
                     actualizarInterfazBus(busV5["t-in-min"], 'tiempo-v5', 'barra-v5');
                     document.getElementById('siguiente-v5').innerText = "Información en tiempo real";
+                } else {
+                    actualizarInterfazBus(null, 'tiempo-v5', 'barra-v5');
+                    document.getElementById('siguiente-v5').innerText = "Sin buses a la vista";
                 }
             } catch (e) { document.getElementById('siguiente-v5').innerText = "Error TMB"; }
         }
 
+        // PETICIÓN X30 (AMB - Proxy)
         async function obtenerAMB() {
             try {
-                const res = await fetch("https://mi-bus.onrender.com/api/amb");
+                // Suponemos que tu servidor proxy acepta el parámetro 'parada'
+                const res = await fetch("https://mi-bus.onrender.com/api/amb?parada=237");
                 const datos = await res.json();
                 if (datos.status === "ok") {
                     const busX30 = datos.buses.find(b => b.linea.includes("X30"));
                     if (busX30) {
                         actualizarInterfazBus(busX30.minutos, 'tiempo-x30', 'barra-x30');
                         document.getElementById('info-amb').innerText = "Servidor Online ✅";
+                    } else {
+                        actualizarInterfazBus(null, 'tiempo-x30', 'barra-x30');
+                        document.getElementById('siguiente-x30').innerText = "Sin buses a la vista";
                     }
                 }
             } catch (e) { document.getElementById('info-amb').innerText = "⚠️ Error Servidor"; }
         }
 
-        // NUEVA FUNCIÓN: Animación visual para el botón de actualizar
+        // PETICIÓN L52 (AMB - Proxy)
+        async function obtenerL52() {
+            try {
+                // Apuntamos al proxy con la nueva parada 002275
+                const res = await fetch("https://mi-bus.onrender.com/api/amb?parada=002275");
+                const datos = await res.json();
+                if (datos.status === "ok") {
+                    const busL52 = datos.buses.find(b => b.linea.includes("L52"));
+                    if (busL52) {
+                        actualizarInterfazBus(busL52.minutos, 'tiempo-l52', 'barra-l52');
+                        document.getElementById('info-l52').innerText = "Servidor Online ✅";
+                        document.getElementById('siguiente-l52').innerText = "Información en tiempo real";
+                    } else {
+                        actualizarInterfazBus(null, 'tiempo-l52', 'barra-l52');
+                        document.getElementById('siguiente-l52').innerText = "Sin buses a la vista";
+                    }
+                }
+            } catch (e) { document.getElementById('info-l52').innerText = "⚠️ Error Servidor"; }
+        }
+
+        // BOTONES DE ACTUALIZAR
         async function forzarActualizacion(linea) {
             const btn = document.getElementById(`btn-${linea}`);
+            const textoOriginal = btn.innerText;
             btn.innerText = "Actualizando...";
-            btn.disabled = true; // Desactivamos el botón brevemente para evitar clics dobles
+            btn.disabled = true;
 
             if(linea === 'v5') await obtenerTMB();
             if(linea === 'x30') await obtenerAMB();
+            if(linea === 'l52') await obtenerL52();
             
-            // Le damos un pequeño retraso de 800ms para que se note que ha hecho algo
             setTimeout(() => {
-                btn.innerText = "Actualizar Ahora";
+                btn.innerText = textoOriginal;
                 btn.disabled = false;
             }, 800);
         }
@@ -325,10 +382,10 @@
             actualizarReloj();
             setInterval(actualizarReloj, 1000);
             
-            // Actualización automática en segundo plano cada 30s
             setInterval(() => {
                 obtenerTMB();
                 obtenerAMB();
+                obtenerL52();
             }, 30000);
         };
     </script>
