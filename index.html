@@ -322,25 +322,21 @@
             } catch (e) { document.getElementById('info-amb').innerText = "⚠️ Error Servidor"; }
         }
 
-        // PETICIÓN L52 (AMB - Modo Espía)
+        // PETICIÓN L52 (AMB - Modo Normal)
         async function obtenerL52() {
             try {
                 const res = await fetch("https://mi-bus.onrender.com/api/amb?parada=002275");
                 const datos = await res.json();
-                
                 if (datos.status === "ok") {
-                    if (datos.buses.length > 0) {
-                        // Cogemos el primer bus que llegue para mover la barra de tiempo
-                        const busPrincipal = datos.buses[0];
-                        actualizarInterfazBus(busPrincipal.minutos, 'tiempo-l52', 'barra-l52');
-                        
-                        // MAGIA: Mostramos TODOS los códigos que llegan a esta parada
-                        const codigos = datos.buses.map(b => `${b.linea} (${b.minutos}m)`).join(" | ");
-                        document.getElementById('siguiente-l52').innerHTML = `<span style="color:#ffeb3b;">Códigos detectados: <strong>${codigos}</strong></span>`;
+                    // Ahora buscamos literalmente "L52" porque el servidor ya lo traduce
+                    const busL52 = datos.buses.find(b => b.linea.includes("L52"));
+                    if (busL52) {
+                        actualizarInterfazBus(busL52.minutos, 'tiempo-l52', 'barra-l52');
                         document.getElementById('info-l52').innerText = "Servidor Online ✅";
+                        document.getElementById('siguiente-l52').innerText = "Información en tiempo real";
                     } else {
                         actualizarInterfazBus(null, 'tiempo-l52', 'barra-l52');
-                        document.getElementById('siguiente-l52').innerText = "Sin buses a la vista (o código erróneo)";
+                        document.getElementById('siguiente-l52').innerText = "Sin buses a la vista";
                     }
                 }
             } catch (e) { document.getElementById('info-l52').innerText = "⚠️ Error Servidor"; }
