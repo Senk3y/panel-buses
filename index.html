@@ -4,17 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Bus - Aurora Edition</title>
+    
+    <link rel="icon" type="image/png" href="icono_bus.png">
+    <link rel="apple-touch-icon" href="icono_bus.png">
+    <meta name="theme-color" content="#0f172a">
+
     <style>
         /* 1. CONFIGURACIÓN BASE Y FONDO */
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Centrado horizontal */
+            align-items: center;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
@@ -22,7 +25,7 @@
             background: linear-gradient(-45deg, #0f172a, #1e1b4b, #111827, #1e293b);
             background-size: 400% 400%;
             animation: auroraBackground 20s ease infinite;
-            overflow-x: hidden; /* Evita scroll lateral molesto */
+            overflow-x: hidden;
         }
 
         @keyframes auroraBackground {
@@ -33,10 +36,7 @@
 
         .fondo-textos {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
         }
 
@@ -54,200 +54,202 @@
             to { transform: translateX(-100%); }
         }
 
-        /* 2. ESTRUCTURA DASHBOARD */
+        /* 2. RELOJ GLOBAL (SIEMPRE VISIBLE) */
         .reloj-global {
             font-size: 2.5em;
-            color: rgba(255, 255, 255, 0.8);
-            margin: 20px 0 30px 0;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 10px 0 20px 0;
             font-family: monospace;
             letter-spacing: 4px;
             text-shadow: 0 0 20px rgba(255,255,255,0.2);
             z-index: 10;
         }
 
-        .contenedor-tarjetas {
-            display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
-            justify-content: center;
-            z-index: 10;
+        /* 3. ESTRUCTURA DE NAVEGACIÓN (VISTAS) */
+        .seccion-app {
             width: 100%;
-            max-width: 1200px;
-            margin-bottom: 100px; /* Espacio para que el botón no tape la info */
+            max-width: 500px;
+            display: none; /* Se controla por JS */
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.4s ease;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 4. ESTILOS DEL MENÚ PRINCIPAL */
+        .lista-menu {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .item-menu {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .item-menu:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.15); }
+
+        .texto-item { flex-grow: 1; display: flex; flex-direction: column; margin-left: 15px; }
+        .nombre-parada { font-weight: bold; font-size: 1.1em; color: #fff; }
+        .lineas-badge { font-size: 0.8em; color: #4facfe; margin-top: 4px; font-weight: bold; text-transform: uppercase; }
+
+        /* 5. TARJETAS Y DETALLES */
         .tarjeta {
             background-color: rgba(30, 30, 30, 0.7); 
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
             text-align: center;
             width: 100%;
-            max-width: 350px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .parada {
-            font-size: 1em;
-            color: #b3b3b3;
             margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* 3. LÍNEAS Y TIEMPOS */
         .linea {
-            font-size: 2.2em;
-            font-weight: bold;
-            color: #ffffff;
-            display: inline-block;
-            padding: 5px 20px;
-            border-radius: 10px;
-            margin-bottom: 10px;
+            font-size: 2.5em; font-weight: bold; padding: 5px 25px;
+            border-radius: 12px; margin-bottom: 15px; display: inline-block;
         }
-        
-        .linea-tmb { background-color: #2b70f0; box-shadow: 0 4px 15px rgba(43, 112, 240, 0.4); }
-        .linea-amb { background-color: #ff5100; box-shadow: 0 4px 15px rgba(230, 126, 57, 0.4); }
+        .linea-tmb { background-color: #2b70f0; }
+        .linea-amb { background-color: #ff5100; }
 
-        .tiempo {
-            font-size: 3em;
-            font-weight: bold;
-            color: #4caf50;
-            min-height: 1.2em;
-        }
-
-        .minutos-texto {
-            font-size: 0.4em;
-            color: #888;
-            display: block;
-            text-transform: uppercase;
-        }
+        .tiempo { font-size: 3.5em; font-weight: bold; color: #4caf50; }
+        .minutos-texto { font-size: 0.4em; color: #888; display: block; }
 
         .progreso-container {
-            width: 100%;
-            height: 8px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            margin: 15px 0;
-            overflow: hidden;
+            width: 100%; height: 8px; background: rgba(255,255,255,0.1);
+            border-radius: 10px; margin: 20px 0; overflow: hidden;
+        }
+        .progreso-barra { height: 100%; width: 0%; background: #4caf50; transition: width 1s; }
+
+        /* 6. BOTONES DE ACCIÓN */
+        .btn-volver {
+            align-self: flex-start; background: none; border: none;
+            color: #aaa; cursor: pointer; font-size: 1.1em; margin-bottom: 15px;
         }
 
-        .progreso-barra {
-            height: 100%;
-            width: 0%;
-            background-color: #4caf50;
-            transition: width 1s ease-in-out;
+        button.btn-accion {
+            padding: 15px 35px; font-size: 1em; color: white;
+            background: #2b70f0; border: none; border-radius: 50px;
+            font-weight: bold; text-transform: uppercase; width: 100%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
         }
+        
+        button.btn-accion:disabled { background: #555; cursor: not-allowed; }
 
-        @keyframes parpadeo {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-        .alerta-roja { animation: parpadeo 1s infinite; }
-
-        /* 4. BOTONES */
-        button {
-            padding: 15px 35px;
-            font-size: 1em;
-            color: white;
-            background-color: rgba(43, 112, 240, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            z-index: 100;
-        }
-
-        /* 📱 ADAPTACIÓN PARA MÓVIL (CORREGIDO) */
         @media (max-width: 600px) {
-            .reloj-global { font-size: 1.8em; margin: 10px 0; }
-            .contenedor-tarjetas { gap: 15px; }
-            .tarjeta { padding: 20px; }
-            .tiempo { font-size: 2.5em; }
-            
-            button {
-                position: fixed;
-                bottom: 25px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 85%;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-                backdrop-filter: blur(10px);
-            }
+            .reloj-global { font-size: 2em; margin-top: 0; }
+            button.btn-accion { position: fixed; bottom: 25px; left: 5%; width: 90%; }
         }
 
+        .alerta-roja { animation: parpadeo 1s infinite; }
+        @keyframes parpadeo { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         .modo-ahora { animation: arcoiris 1.5s linear infinite; }
-        @keyframes arcoiris {
-            0% { color: #ff5252; } 33% { color: #ffeb3b; } 66% { color: #4caf50; } 100% { color: #ff5252; }
-        }
+        @keyframes arcoiris { 0% { color: #ff5252; } 33% { color: #ffeb3b; } 66% { color: #4caf50; } 100% { color: #ff5252; } }
     </style>
 </head>
 <body>
 
     <div id="fondo-textos" class="fondo-textos"></div>
+
     <div id="reloj" class="reloj-global">00:00:00</div>
 
-    <div class="contenedor-tarjetas">
-        <div class="tarjeta">
-            <div class="parada">📍 C. Bell-lloc - Berlín (3521)</div>
-            <div class="bloque-bus">
-                <div class="linea linea-tmb">V5</div>
-                <div class="tiempo" id="tiempo-v5">--</div>
-                <div class="progreso-container">
-                    <div id="barra-v5" class="progreso-barra"></div>
+    <div id="vista-menu" class="seccion-app" style="display: flex;">
+        <h3 style="margin: 0; opacity: 0.6; font-weight: normal; align-self: flex-start; margin-left: 5px;">MIS PARADAS</h3>
+        
+        <div class="lista-menu">
+            <div class="item-menu" onclick="navegarA('parada-v5')">
+                <span style="font-size: 1.5em;">📍</span>
+                <div class="texto-item">
+                    <span class="nombre-parada">C. Bell-lloc - Berlín</span>
+                    <span class="lineas-badge">Línea V5</span>
                 </div>
-                <div class="proximo" id="siguiente-v5">Consultando...</div>
+                <span style="opacity: 0.3;">❯</span>
             </div>
-        </div>
 
-        <div class="tarjeta">
-            <div class="parada">📍 Pl. Reina Maria Cristina (237)</div>
-            <div class="bloque-bus">
-                <div class="linea linea-amb">X30</div>
-                <div class="tiempo" id="tiempo-x30">--</div>
-                <div class="progreso-container">
-                    <div id="barra-x30" class="progreso-barra"></div>
+            <div class="item-menu" onclick="navegarA('parada-x30')">
+                <span style="font-size: 1.5em;">📍</span>
+                <div class="texto-item">
+                    <span class="nombre-parada">Pl. Reina Maria Cristina</span>
+                    <span class="lineas-badge">Línea X30</span>
                 </div>
-                <div class="proximo" id="siguiente-x30">Conectando...</div>
+                <span style="opacity: 0.3;">❯</span>
             </div>
-            <div class="proximo" id="info-amb" style="font-size: 0.7em; margin-top: 15px; opacity: 0.6;"></div>
         </div>
     </div>
 
-    <button onclick="actualizarTodaLaRed()">Actualizar Red</button>
+    <div id="parada-v5" class="seccion-app">
+        <button class="btn-volver" onclick="irAlMenu()">❮ Menú Principal</button>
+        <div class="tarjeta">
+            <div style="font-size: 0.9em; opacity: 0.5; margin-bottom: 10px;">PARADA 3521</div>
+            <div class="linea linea-tmb">V5</div>
+            <div class="tiempo" id="tiempo-v5">--</div>
+            <div class="progreso-container"><div id="barra-v5" class="progreso-barra"></div></div>
+            <div id="siguiente-v5" style="opacity: 0.7;">Consultando TMB...</div>
+        </div>
+        <button id="btn-v5" class="btn-accion" onclick="forzarActualizacion('v5')">Actualizar Ahora</button>
+    </div>
+
+    <div id="parada-x30" class="seccion-app">
+        <button class="btn-volver" onclick="irAlMenu()">❮ Menú Principal</button>
+        <div class="tarjeta">
+            <div style="font-size: 0.9em; opacity: 0.5; margin-bottom: 10px;">PARADA 237</div>
+            <div class="linea linea-amb">X30</div>
+            <div class="tiempo" id="tiempo-x30">--</div>
+            <div class="progreso-container"><div id="barra-x30" class="progreso-barra"></div></div>
+            <div id="siguiente-x30" style="opacity: 0.7;">Conectando AMB...</div>
+            <div id="info-amb" style="font-size: 0.7em; margin-top: 15px; opacity: 0.4;"></div>
+        </div>
+        <button id="btn-x30" class="btn-accion" style="background-color: #ff5100;" onclick="forzarActualizacion('x30')">Actualizar Ahora</button>
+    </div>
 
     <script>
-        // Tus funciones de JS se mantienen igual porque funcionaban perfecto
         const APP_ID = "05f36d2d"; 
         const APP_KEY = "7337db37d02d34777f38d728ce1c1903"; 
         const PARADA_TMB = "3521"; 
 
+        // NAVEGACIÓN
+        function navegarA(id) {
+            document.querySelectorAll('.seccion-app').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'flex';
+            if(id === 'parada-v5') obtenerTMB();
+            if(id === 'parada-x30') obtenerAMB();
+        }
+
+        function irAlMenu() {
+            document.querySelectorAll('.seccion-app').forEach(s => s.style.display = 'none');
+            document.getElementById('vista-menu').style.display = 'flex';
+        }
+
+        // LÓGICA DE BUS
         function actualizarInterfazBus(minutos, idTiempo, idBarra) {
             const tiempoEl = document.getElementById(idTiempo);
             const barraEl = document.getElementById(idBarra);
-
-            if (minutos === null || minutos === undefined) {
+            if (minutos === null) {
                 tiempoEl.innerHTML = "--";
                 barraEl.style.width = "0%";
                 return;
             }
-
-            let porcentaje = Math.max(0, 100 - (minutos * 6.6)); // Ajustado para 15 mins max
+            let porcentaje = Math.max(0, 100 - (minutos * 6.6));
             barraEl.style.width = porcentaje + "%";
+            barraEl.style.backgroundColor = minutos <= 3 ? "#ff5252" : "#4caf50";
+            if (minutos <= 3) barraEl.classList.add("alerta-roja"); else barraEl.classList.remove("alerta-roja");
             
-            if (minutos <= 3) {
-                barraEl.style.backgroundColor = "#ff5252"; 
-                barraEl.classList.add("alerta-roja"); 
-            } else {
-                barraEl.style.backgroundColor = "#4caf50"; 
-                barraEl.classList.remove("alerta-roja"); 
-            }
-
             if (minutos === 0) {
                 tiempoEl.innerHTML = "¡Ahora!";
                 tiempoEl.classList.add("modo-ahora");
@@ -260,38 +262,44 @@
         async function obtenerTMB() {
             try {
                 const url = `https://api.tmb.cat/v1/ibus/stops/${PARADA_TMB}?app_id=${APP_ID}&app_key=${APP_KEY}`;
-                const respuesta = await fetch(url);
-                const datos = await respuesta.json();
-                if (datos.data && datos.data.ibus) {
-                    const busV5 = datos.data.ibus.find(bus => bus.line === "V5");
-                    if (busV5) {
-                        actualizarInterfazBus(busV5["t-in-min"], 'tiempo-v5', 'barra-v5');
-                        document.getElementById('siguiente-v5').innerText = "Bus en trayecto";
-                    }
+                const res = await fetch(url);
+                const datos = await res.json();
+                const busV5 = datos.data?.ibus.find(b => b.line === "V5");
+                if (busV5) {
+                    actualizarInterfazBus(busV5["t-in-min"], 'tiempo-v5', 'barra-v5');
+                    document.getElementById('siguiente-v5').innerText = "Información en tiempo real";
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { document.getElementById('siguiente-v5').innerText = "Error TMB"; }
         }
 
         async function obtenerAMB() {
             try {
-                const respuesta = await fetch("https://mi-bus.onrender.com/api/amb");
-                const datos = await respuesta.json();
-                if (datos.status === "ok" && datos.buses.length > 0) {
+                const res = await fetch("https://mi-bus.onrender.com/api/amb");
+                const datos = await res.json();
+                if (datos.status === "ok") {
                     const busX30 = datos.buses.find(b => b.linea.includes("X30"));
                     if (busX30) {
                         actualizarInterfazBus(busX30.minutos, 'tiempo-x30', 'barra-x30');
-                        document.getElementById('siguiente-x30').innerText = "Red AMB Activa";
                         document.getElementById('info-amb').innerText = "Servidor Online ✅";
                     }
                 }
-            } catch (e) { 
-                document.getElementById('info-amb').innerText = "⚠️ Error Servidor";
-            }
+            } catch (e) { document.getElementById('info-amb').innerText = "⚠️ Error Servidor"; }
         }
 
-        function actualizarTodaLaRed() {
-            obtenerTMB();
-            obtenerAMB();
+        // NUEVA FUNCIÓN: Animación visual para el botón de actualizar
+        async function forzarActualizacion(linea) {
+            const btn = document.getElementById(`btn-${linea}`);
+            btn.innerText = "Actualizando...";
+            btn.disabled = true; // Desactivamos el botón brevemente para evitar clics dobles
+
+            if(linea === 'v5') await obtenerTMB();
+            if(linea === 'x30') await obtenerAMB();
+            
+            // Le damos un pequeño retraso de 800ms para que se note que ha hecho algo
+            setTimeout(() => {
+                btn.innerText = "Actualizar Ahora";
+                btn.disabled = false;
+            }, 800);
         }
 
         function actualizarReloj() {
@@ -300,10 +308,10 @@
 
         function crearFondo() {
             const fondo = document.getElementById('fondo-textos');
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 12; i++) {
                 const span = document.createElement('span');
                 span.className = 'mensaje-flotante';
-                span.innerText = 'MI BUS '.repeat(5);
+                span.innerText = 'MI BUS '.repeat(4);
                 span.style.top = (Math.random() * 100) + 'vh';
                 span.style.fontSize = (Math.random() * 2 + 1) + 'em';
                 span.style.animationDuration = (Math.random() * 20 + 20) + 's';
@@ -316,8 +324,12 @@
             crearFondo();
             actualizarReloj();
             setInterval(actualizarReloj, 1000);
-            actualizarTodaLaRed();
-            setInterval(actualizarTodaLaRed, 30000);
+            
+            // Actualización automática en segundo plano cada 30s
+            setInterval(() => {
+                obtenerTMB();
+                obtenerAMB();
+            }, 30000);
         };
     </script>
 </body>
