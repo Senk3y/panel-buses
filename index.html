@@ -77,7 +77,10 @@
     <div id="vista-menu" class="seccion-app" style="display: flex;">
         <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 15px;">
             <h3 style="margin: 0; opacity: 0.8; font-weight: 800; letter-spacing: 1px;">MIS PARADAS</h3>
-            <button onclick="mostrarFormulario()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; cursor: pointer;">+ AÑADIR</button>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="compartirApp()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; cursor: pointer;">📤 COMPARTIR</button>
+                <button onclick="mostrarFormulario()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; cursor: pointer;">+ AÑADIR</button>
+            </div>
         </div>
         
         <div class="lista-menu" id="contenedor-paradas">
@@ -319,6 +322,25 @@
             btn.innerText = "SINCRONIZANDO..."; btn.disabled = true;
             await buscarDatosBus();
             setTimeout(() => { btn.innerText = original; btn.disabled = false; }, 800);
+        }
+
+        // FUNCIÓN PARA COMPARTIR LA APP
+        async function compartirApp() {
+            // Comprobamos si el móvil soporta compartir de forma nativa
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Mi Bus - Cosmic Edition',
+                        text: '¡Mira esta App para ver los tiempos del autobús en tiempo real!',
+                        url: window.location.href // Coge automáticamente tu enlace de Vercel/GitHub
+                    });
+                } catch (error) {
+                    console.log('Compartir cancelado');
+                }
+            } else {
+                // Si lo abren desde un PC que no tiene menú de compartir, les copiamos el enlace
+                alert('Copia este enlace para compartir la app:\n' + window.location.href);
+            }
         }
 
         // 6. INICIALIZACIÓN Y FONDOS
