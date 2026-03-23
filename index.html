@@ -22,14 +22,28 @@
         }
 
         .reloj-global { 
-            font-size: 2.5em; 
-            color: #FF00FF; 
-            margin: 10px 0 20px 0; 
-            font-family: 'Courier New', Courier, monospace; 
-            letter-spacing: 4px; 
-            text-shadow: 0 0 20px #FF00FF, 0 0 40px #FF00FF; 
-            z-index: 10; 
-        }
+    font-size: 2.2em; /* Un pelín más pequeño para que sea estético */
+    color: #FF00FF; 
+    margin: 15px auto 25px auto; 
+    padding: 10px 35px;
+    font-family: 'Courier New', Courier, monospace; 
+    letter-spacing: 3px; 
+    text-shadow: 0 0 15px #FF00FF; 
+    
+    /* DISEÑO TIPO CÁPSULA (Floating Badge) */
+    background: rgba(15, 23, 42, 0.7); /* Fondo oscuro coherente con las tarjetas */
+    backdrop-filter: blur(12px);     /* El efecto cristal que buscamos */
+    -webkit-backdrop-filter: blur(12px);
+    border: 2px solid rgba(255, 0, 255, 0.4); /* Borde de neón fino */
+    border-radius: 50px;             /* Forma de cápsula/pastilla */
+    
+    /* POSICIONAMIENTO */
+    display: inline-block;           /* Solo ocupa lo que mide el texto */
+    position: sticky; 
+    top: 15px;
+    z-index: 999; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7), inset 0 0 15px rgba(255,0,255,0.1);
+}
 
         .seccion-app { 
             width: 100%; max-width: 500px; display: none; flex-direction: column; 
