@@ -138,6 +138,9 @@
             <label>Nombre personalizado (ej. Casa, Trabajo)</label>
             <input type="text" id="input-nombre" placeholder="Mi parada">
             
+            <label>Localidad (ej. Barcelona, Sant Joan Despí)</label>
+            <input type="text" id="input-localidad" placeholder="Ciudad o municipio">
+            
             <label>Línea (ej. V5, X30)</label>
             <input type="text" id="input-linea" placeholder="V5">
             
@@ -177,12 +180,13 @@
         let timerActualizacion = null;
 
         // 1. CARGAR PARADAS
-        let misParadas = JSON.parse(localStorage.getItem('paradasGuardadas'));
+        let misParadas = JSON.parse(localStorage.getItem('paradasGuardadas_v3'));
         if (!misParadas || misParadas.length === 0) {
             misParadas = [
-                { id: 1, nombre: 'C. Bell-lloc - Berlín', linea: 'V5', codigo: '3521', red: 'TMB' },
-                { id: 2, nombre: 'Pl. Reina Maria Cristina', linea: 'X30', codigo: '237', red: 'AMB' },
-                { id: 3, nombre: 'Major - Mercat', linea: 'L52', codigo: '002275', red: 'AMB' }
+                { id: 1, nombre: 'C. Bell-lloc - Berlín', linea: 'V5', codigo: '3521', red: 'TMB', localidad: 'Barcelona' },
+                { id: 2, nombre: 'Pl. Reina Maria Cristina', linea: 'X30', codigo: '237', red: 'AMB', localidad: 'Barcelona' },
+                { id: 3, nombre: 'Major - Mercat', linea: 'L52', codigo: '002275', red: 'AMB', localidad: "Sant Joan Despí" },
+                { id: 4, nombre: 'Rosa Leveroni', linea: 'X30', codigo: '109953', red: 'AMB', localidad: 'Sant Just Desvern' }
             ];
             guardarEnMemoria();
         }
@@ -204,6 +208,7 @@
                         <span style="font-size: 1.8em; filter: drop-shadow(0 0 10px ${colorLinea});">📍</span>
                         <div class="texto-item">
                             <span class="nombre-parada">${p.nombre}</span>
+                            <span style="font-size: 0.75em; color: #94a3b8; margin-top: 3px; letter-spacing: 0.5px;">🏙️ ${p.localidad}</span>
                             <span class="lineas-badge" style="color: ${colorLinea}">Línea ${p.linea} (${p.red})</span>
                         </div>
                     </div>
@@ -263,21 +268,23 @@
         }
 
         // 4. LÓGICA DE AÑADIR/BORRAR PARADAS
-        function guardarEnMemoria() { localStorage.setItem('paradasGuardadas', JSON.stringify(misParadas)); }
+        function guardarEnMemoria() { localStorage.setItem('paradasGuardadas_v3', JSON.stringify(misParadas)); }
 
         function guardarParada() {
             const nombre = document.getElementById('input-nombre').value;
+            const localidad = document.getElementById('input-localidad').value || 'Desconocida'; // Por si se deja en blanco
             const linea = document.getElementById('input-linea').value;
             const codigo = document.getElementById('input-codigo').value;
             const red = document.getElementById('input-red').value;
 
-            if(!nombre || !linea || !codigo) { alert("¡Rellena todos los campos!"); return; }
+            if(!nombre || !linea || !codigo) { alert("¡Rellena los campos principales!"); return; }
 
-            const nuevaParada = { id: Date.now(), nombre, linea: linea.toUpperCase(), codigo, red };
+            const nuevaParada = { id: Date.now(), nombre, linea: linea.toUpperCase(), codigo, red, localidad };
             misParadas.push(nuevaParada);
             guardarEnMemoria();
             
             document.getElementById('input-nombre').value = '';
+            document.getElementById('input-localidad').value = '';
             document.getElementById('input-linea').value = '';
             document.getElementById('input-codigo').value = '';
             
@@ -298,7 +305,7 @@
             const tiempoEl = document.getElementById('detalle-tiempo');
             tiempoEl.classList.add('brillo-carga');
             tiempoEl.innerHTML = '88'; 
-            document.getElementById('detalle-siguiente').innerText = "Buscando en el cosmos...";
+            document.getElementById('detalle-siguiente').innerText = "Buscando...";
         }
 
         function procesarResultados(min1, min2) {
