@@ -22,28 +22,28 @@
         }
 
         .reloj-global { 
-    font-size: 2.2em; /* Un pelín más pequeño para que sea estético */
-    color: #FF00FF; 
-    margin: 15px auto 25px auto; 
-    padding: 10px 35px;
-    font-family: 'Courier New', Courier, monospace; 
-    letter-spacing: 3px; 
-    text-shadow: 0 0 15px #FF00FF; 
-    
-    /* DISEÑO TIPO CÁPSULA (Floating Badge) */
-    background: rgba(15, 23, 42, 0.7); /* Fondo oscuro coherente con las tarjetas */
-    backdrop-filter: blur(12px);     /* El efecto cristal que buscamos */
-    -webkit-backdrop-filter: blur(12px);
-    border: 2px solid rgba(255, 0, 255, 0.4); /* Borde de neón fino */
-    border-radius: 50px;             /* Forma de cápsula/pastilla */
-    
-    /* POSICIONAMIENTO */
-    display: inline-block;           /* Solo ocupa lo que mide el texto */
-    position: sticky; 
-    top: 15px;
-    z-index: 999; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.7), inset 0 0 15px rgba(255,0,255,0.1);
-}
+            font-size: 2.2em; 
+            color: #FF00FF; 
+            margin: 15px auto 25px auto; 
+            padding: 10px 35px;
+            font-family: 'Courier New', Courier, monospace; 
+            letter-spacing: 3px; 
+            text-shadow: 0 0 15px #FF00FF; 
+            
+            /* DISEÑO TIPO CÁPSULA (Floating Badge) */
+            background: rgba(15, 23, 42, 0.7); 
+            backdrop-filter: blur(12px);     
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 0, 255, 0.4); 
+            border-radius: 50px;             
+            
+            /* POSICIONAMIENTO */
+            display: inline-block;           
+            position: sticky; 
+            top: 15px;
+            z-index: 999; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7), inset 0 0 15px rgba(255,0,255,0.1);
+        }
 
         .seccion-app { 
             width: 100%; max-width: 500px; display: none; flex-direction: column; 
@@ -272,7 +272,7 @@
 
         function guardarParada() {
             const nombre = document.getElementById('input-nombre').value;
-            const localidad = document.getElementById('input-localidad').value || 'Desconocida'; // Por si se deja en blanco
+            const localidad = document.getElementById('input-localidad').value || 'Desconocida';
             const linea = document.getElementById('input-linea').value;
             const codigo = document.getElementById('input-codigo').value;
             const red = document.getElementById('input-red').value;
@@ -349,11 +349,9 @@
             if(!paradaActiva) return;
             setEstadoCarga();
             
-            // 1. Control de tiempo: Si el servidor tarda más de 30 seg, cortamos la conexión
             const controller = new AbortController();
             const timeoutConexion = setTimeout(() => controller.abort(), 30000);
 
-            // 2. Aviso de servidor dormido si tarda más de 2 segundos (típico de Render)
             const alertaDormido = setTimeout(() => {
                 if(paradaActiva.red !== 'TMB') {
                     document.getElementById('detalle-siguiente').innerText = "Despertando servidor AMB (suele tardar 30s)...";
@@ -372,10 +370,16 @@
                     const datos = await res.json();
                     if (datos.status === "ok") {
                         const buses = datos.buses.filter(b => b.linea.toUpperCase().includes(paradaActiva.linea));
-                        // 3. Forzamos a que lo que llegue sea un Número entero
-                        let min1 = buses[0] ? parseInt(buses[0].minutos) : null;
-                        let min2 = buses[1] ? parseInt(buses[1].minutos) : null;
-                        procesarResultados(min1, min2);
+                        
+                        // Forzamos a que lo que llegue sea un número entero
+                        let minAMB1 = buses[0]?.["t-in-min"];
+                        let minAMB2 = buses[1]?.["t-in-min"];
+
+                        // Si es 'Imminent' u otro texto, forzamos un 0 o null
+                        minAMB1 = isNaN(minAMB1) ? 0 : parseInt(minAMB1);
+                        minAMB2 = isNaN(minAMB2) ? null : parseInt(minAMB2);
+
+                        procesarResultados(minAMB1, minAMB2);
                     } else throw new Error("AMB Error");
                 }
                 document.getElementById('detalle-info').innerText = "Servidor: Online ✅";
@@ -387,7 +391,6 @@
                 }
                 procesarResultados(null, null);
             } finally {
-                // Limpiamos los cronómetros para que no haya errores
                 clearTimeout(timeoutConexion);
                 clearTimeout(alertaDormido);
             }
@@ -402,43 +405,8 @@
             try {
                 await buscarDatosBus();
             } finally {
-                // 4. El finally asegura que EL BOTÓN SIEMPRE VUELVA A FUNCIONAR
                 setTimeout(() => { btn.innerText = original; btn.disabled = false; }, 800);
             }
-        }
-
-        async function buscarDatosBus() {
-            if(!paradaActiva) return;
-            setEstadoCarga();
-            
-            try {
-                if (paradaActiva.red === 'TMB') {
-                    const url = `https://api.tmb.cat/v1/ibus/stops/${paradaActiva.codigo}?app_id=${APP_ID}&app_key=${APP_KEY}`;
-                    const res = await fetch(url);
-                    const datos = await res.json();
-                    const buses = datos.data?.ibus.filter(b => b.line.toUpperCase() === paradaActiva.linea) || [];
-                    procesarResultados(buses[0]?.["t-in-min"], buses[1]?.["t-in-min"]);
-                } else {
-                    const res = await fetch(`https://mi-bus.onrender.com/api/amb?parada=${paradaActiva.codigo}`);
-                    const datos = await res.json();
-                    if (datos.status === "ok") {
-                        const buses = datos.buses.filter(b => b.linea.toUpperCase().includes(paradaActiva.linea));
-                        procesarResultados(buses[0]?.minutos, buses[1]?.minutos);
-                    } else throw new Error("AMB Error");
-                }
-                document.getElementById('detalle-info').innerText = "Servidor: Online ✅";
-            } catch (e) {
-                document.getElementById('detalle-info').innerText = "⚠️ Error de conexión";
-                procesarResultados(null, null);
-            }
-        }
-
-        async function forzarActualizacion() {
-            const btn = document.getElementById('btn-actualizar');
-            const original = btn.innerText;
-            btn.innerText = "SINCRONIZANDO..."; btn.disabled = true;
-            await buscarDatosBus();
-            setTimeout(() => { btn.innerText = original; btn.disabled = false; }, 800);
         }
 
         async function compartirApp() {

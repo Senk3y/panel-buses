@@ -2,21 +2,25 @@
   "name": "Mi Bus",
   "short_name": "Mi Bus",
   "description": "Tus tiempos de autobús en tiempo real con estilo retro-futurista.",
-  "start_url": "./index.html",
+  "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#020617",
   "theme_color": "#FF00FF",
+  "lang": "es",
+  "categories": ["travel", "navigation"],
   "icons": [
     {
       "src": "icono_bus.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "icono_bus.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
