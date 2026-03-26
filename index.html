@@ -315,9 +315,10 @@
             
             tiempoEl.classList.remove('brillo-carga');
 
-            if (min1 === null || min1 === undefined) {
+            // Asegurarnos de que tenemos un número válido
+            if (min1 === null || min1 === undefined || isNaN(min1)) {
                 tiempoEl.innerHTML = "--"; barraEl.style.width = "0%";
-                sigEl.innerText = "Sin buses próximos";
+                sigEl.innerText = "Sin buses próximos o servidor inactivo";
                 document.body.style.animationDuration = '15s';
                 return;
             }
@@ -328,7 +329,7 @@
 
             if (min1 <= 3 && navigator.vibrate) navigator.vibrate([200, 100, 200]); 
 
-            if (min2 !== null && min2 !== undefined) {
+            if (min2 !== null && min2 !== undefined && !isNaN(min2)) {
                 sigEl.innerHTML = `Próximo bus en: <span style="color:#fff;">${min2} min</span>`;
             } else {
                 sigEl.innerText = "No hay más buses en cola";
@@ -342,6 +343,68 @@
             
             if (min1 === 0) { tiempoEl.innerHTML = "¡AHORA!"; tiempoEl.classList.add("modo-ahora"); } 
             else { tiempoEl.innerHTML = min1 + '<span class="minutos-texto">minutos</span>'; tiempoEl.classList.remove("modo-ahora"); }
+        }
+
+        async function buscarDatosBus() {
+            if(!paradaActiva) return;
+            setEstadoCarga();
+            
+            // 1. Control de tiempo: Si el servidor tarda más de 30 seg, cortamos la conexión
+            const controller = new AbortController();
+            const timeoutConexion = setTimeout(() => controller.abort(), 30000);
+
+            // 2. Aviso de servidor dormido si tarda más de 2 segundos (típico de Render)
+            const alertaDormido = setTimeout(() => {
+                if(paradaActiva.red !== 'TMB') {
+                    document.getElementById('detalle-siguiente').innerText = "Despertando servidor AMB (suele tardar 30s)...";
+                }
+            }, 2000);
+            
+            try {
+                if (paradaActiva.red === 'TMB') {
+                    const url = `https://api.tmb.cat/v1/ibus/stops/${paradaActiva.codigo}?app_id=${APP_ID}&app_key=${APP_KEY}`;
+                    const res = await fetch(url, { signal: controller.signal });
+                    const datos = await res.json();
+                    const buses = datos.data?.ibus.filter(b => b.line.toUpperCase() === paradaActiva.linea) || [];
+                    procesarResultados(parseInt(buses[0]?.["t-in-min"]), parseInt(buses[1]?.["t-in-min"]));
+                } else {
+                    const res = await fetch(`https://mi-bus.onrender.com/api/amb?parada=${paradaActiva.codigo}`, { signal: controller.signal });
+                    const datos = await res.json();
+                    if (datos.status === "ok") {
+                        const buses = datos.buses.filter(b => b.linea.toUpperCase().includes(paradaActiva.linea));
+                        // 3. Forzamos a que lo que llegue sea un Número entero
+                        let min1 = buses[0] ? parseInt(buses[0].minutos) : null;
+                        let min2 = buses[1] ? parseInt(buses[1].minutos) : null;
+                        procesarResultados(min1, min2);
+                    } else throw new Error("AMB Error");
+                }
+                document.getElementById('detalle-info').innerText = "Servidor: Online ✅";
+            } catch (e) {
+                if(e.name === 'AbortError') {
+                    document.getElementById('detalle-info').innerText = "⚠️ Tiempo agotado (Servidor apagado)";
+                } else {
+                    document.getElementById('detalle-info').innerText = "⚠️ Error de conexión";
+                }
+                procesarResultados(null, null);
+            } finally {
+                // Limpiamos los cronómetros para que no haya errores
+                clearTimeout(timeoutConexion);
+                clearTimeout(alertaDormido);
+            }
+        }
+
+        async function forzarActualizacion() {
+            const btn = document.getElementById('btn-actualizar');
+            const original = btn.innerText;
+            btn.innerText = "SINCRONIZANDO..."; 
+            btn.disabled = true;
+            
+            try {
+                await buscarDatosBus();
+            } finally {
+                // 4. El finally asegura que EL BOTÓN SIEMPRE VUELVA A FUNCIONAR
+                setTimeout(() => { btn.innerText = original; btn.disabled = false; }, 800);
+            }
         }
 
         async function buscarDatosBus() {
