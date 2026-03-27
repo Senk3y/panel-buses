@@ -368,16 +368,23 @@
                 } else {
                     const res = await fetch(`https://mi-bus.onrender.com/api/amb?parada=${paradaActiva.codigo}`, { signal: controller.signal });
                     const datos = await res.json();
+                    
                     if (datos.status === "ok") {
                         const buses = datos.buses.filter(b => b.linea.toUpperCase().includes(paradaActiva.linea));
                         
-                        // Forzamos a que lo que llegue sea un número entero
-                        let minAMB1 = buses[0]?.["t-in-min"];
-                        let minAMB2 = buses[1]?.["t-in-min"];
+                        // 👇 ¡AQUÍ ESTÁ LA MAGIA! Buscamos "minutos" en lugar de "t-in-min" 👇
+                        let rawAMB1 = buses[0]?.minutos;
+                        let rawAMB2 = buses[1]?.minutos;
 
-                        // Si es 'Imminent' u otro texto, forzamos un 0 o null
-                        minAMB1 = isNaN(minAMB1) ? 0 : parseInt(minAMB1);
-                        minAMB2 = isNaN(minAMB2) ? null : parseInt(minAMB2);
+                        // Función rápida para limpiar el tiempo de AMB
+                        const limpiarTiempoAMB = (tiempo) => {
+                            if (tiempo === undefined || tiempo === null) return null; 
+                            if (isNaN(tiempo)) return 0; 
+                            return parseInt(tiempo); 
+                        };
+
+                        let minAMB1 = limpiarTiempoAMB(rawAMB1);
+                        let minAMB2 = limpiarTiempoAMB(rawAMB2);
 
                         procesarResultados(minAMB1, minAMB2);
                     } else throw new Error("AMB Error");
