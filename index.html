@@ -502,8 +502,13 @@
                         l.distanciaHastaGiro = Math.random() * 200 + 50;
                     }
 
-                    if(l.x < 0) l.x = w; if(l.x > w) l.x = 0;
-                    if(l.y < 0) l.y = h; if(l.y > h) l.y = 0;
+                    if(l.x < 0 || l.x > w || l.y < 0 || l.y > h) {
+                    l.trazos = []; 
+                    if(l.x < 0) l.x = w; 
+                    if(l.x > w) l.x = 0;
+                    if(l.y < 0) l.y = h; 
+                    if(l.y > h) l.y = 0;
+                    }
 
                     ctx.beginPath();
                     ctx.strokeStyle = l.color;
