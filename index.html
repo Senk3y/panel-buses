@@ -6,172 +6,242 @@
     <title>Mi Bus</title>
     
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="icono_bus.png">
+    <link type="image/png" rel="icon" href="icono_bus.png">
     <link rel="apple-touch-icon" href="icono_bus.png">
-    <meta name="theme-color" content="#020617">
+    <meta name="theme-color" content="#ef4444">
 
     <style>
-        /* ESTILO 80s SYNTHWAVE */
-        * { box-sizing: border-box; }
+        /* SISTEMA DE TEMAS (VARIABLES CSS) */
+        :root {
+            --bg-color: #0f172a;          /* Oscuro: Fondo base */
+            --surface-color: #1e293b;     /* Oscuro: Tarjetas y menús */
+            --text-color: #f8fafc;        /* Oscuro: Texto principal */
+            --text-muted: #94a3b8;       /* Oscuro: Texto secundario */
+            --border-color: #334155;     /* Oscuro: Bordes */
+            --accent-color: #ef4444;     /* Rojo principal para botones */
+            --accent-hover: #dc2626;     
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-mode {
+            --bg-color: #f8fafc;          /* Claro: Fondo base */
+            --surface-color: #ffffff;     /* Claro: Tarjetas y menús */
+            --text-color: #0f172a;        /* Claro: Texto principal */
+            --text-muted: #64748b;       /* Claro: Texto secundario */
+            --border-color: #e2e8f0;     /* Claro: Bordes */
+            --accent-color: #dc2626;     
+            --accent-hover: #991b1b;
+            --shadow-color: rgba(15, 23, 42, 0.08);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            display: flex; flex-direction: column; align-items: center; 
-            min-height: 100vh; margin: 0; padding: 20px; color: #ffffff; 
-            background-color: #020617; /* Fondo oscuro base */
-            overflow-x: hidden; position: relative; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px; 
+            color: var(--text-color); 
+            background-color: var(--bg-color); 
+        }
+
+        /* CABECERA Y CONTROLES SUPERIORES */
+        .header-controls {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         .reloj-global { 
-            font-size: 2.2em; 
-            color: #FF00FF; 
-            margin: 15px auto 25px auto; 
-            padding: 10px 35px;
-            font-family: 'Courier New', Courier, monospace; 
-            letter-spacing: 3px; 
-            text-shadow: 0 0 15px #FF00FF; 
-            
-            /* DISEÑO TIPO CÁPSULA (Floating Badge) */
-            background: rgba(15, 23, 42, 0.7); 
-            backdrop-filter: blur(12px);     
-            -webkit-backdrop-filter: blur(12px);
-            border: 2px solid rgba(255, 0, 255, 0.4); 
-            border-radius: 50px;             
-            
-            /* POSICIONAMIENTO */
-            display: inline-block;           
-            position: sticky; 
-            top: 15px;
-            z-index: 999; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7), inset 0 0 15px rgba(255,0,255,0.1);
+            font-size: 1.5em; 
+            font-weight: 700;
+            color: var(--text-color); 
+            font-family: monospace;
         }
 
+        .btn-tema {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1em;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        /* SECCIONES APP */
         .seccion-app { 
-            width: 100%; max-width: 500px; display: none; flex-direction: column; 
-            align-items: center; animation: fadeIn 0.4s ease; 
+            width: 100%; 
+            max-width: 500px; 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            animation: fadeIn 0.25s ease-out; 
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .lista-menu { width: 100%; display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
+        /* LISTA / MENÚ PARADAS */
+        .lista-menu { width: 100%; display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+        
         .item-menu { 
-            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); 
-            padding: 15px 20px; border-radius: 22px; display: flex; align-items: center; 
-            transition: all 0.3s; backdrop-filter: blur(12px); position: relative; 
+            background: var(--surface-color); 
+            border: 1px solid var(--border-color); 
+            padding: 16px 20px; 
+            border-radius: 14px; 
+            display: flex; 
+            align-items: center; 
+            box-shadow: 0 4px 6px -1px var(--shadow-color);
         }
         .item-menu-click { flex-grow: 1; display: flex; align-items: center; cursor: pointer; }
-        .item-menu:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.2); }
+        .item-menu:hover { transform: translateY(-1px); }
+        .item-menu:active { transform: scale(0.98); }
+        
         .texto-item { flex-grow: 1; display: flex; flex-direction: column; margin-left: 15px; }
-        .nombre-parada { font-weight: bold; font-size: 1.1em; color: #fff; }
-        .lineas-badge { font-size: 0.8em; margin-top: 4px; font-weight: bold; text-transform: uppercase; color: #22d3ee; }
+        .nombre-parada { font-weight: 600; font-size: 1.1em; color: var(--text-color); }
+        .lineas-badge { font-size: 0.8em; margin-top: 4px; font-weight: bold; text-transform: uppercase; }
 
-        .btn-borrar { background: none; border: none; color: #ef4444; font-size: 1.2em; cursor: pointer; padding: 10px; opacity: 0.6; transition: 0.3s; }
-        .btn-borrar:hover { opacity: 1; transform: scale(1.1); }
+        .btn-borrar { background: none; border: none; color: #ef4444; font-size: 1.2em; cursor: pointer; padding: 10px; opacity: 0.5; }
+        .btn-borrar:hover { opacity: 1; }
 
+        /* DETALLE PARADA (TARJETA) */
         .tarjeta { 
-            background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); 
-            padding: 30px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
-            text-align: center; width: 100%; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; 
+            background-color: var(--surface-color); 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px -5px var(--shadow-color); 
+            text-align: center; 
+            width: 100%; 
+            border: 1px solid var(--border-color); 
+            margin-bottom: 20px; 
         }
+        
         .linea { 
-            font-size: 2.2em; font-weight: 900; padding: 8px 30px; border-radius: 15px; 
-            margin-bottom: 15px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
-            background: linear-gradient(99deg, #FF00FF 0%, #00FFFF 100%); 
+            font-size: 1.8em; 
+            font-weight: 800; 
+            padding: 6px 24px; 
+            border-radius: 10px; 
+            margin-bottom: 15px; 
+            display: inline-block; 
+            color: #ffffff !important;
         }
         
         .tiempo { 
-            font-size: 4em; font-weight: 900; color: #00FF00; 
-            text-shadow: 0 0 20px #00FF00, 0 0 40px rgba(0,255,0,0.5); transition: all 0.3s; 
+            font-size: 4.5em; 
+            font-weight: 800; 
+            color: var(--text-color); 
+            margin: 10px 0;
         }
-        .minutos-texto { font-size: 0.4em; color: #94a3b8; display: block; text-transform: uppercase; letter-spacing: 2px; }
-        .brillo-carga { animation: pulseCarga 0.8s infinite alternate; color: #64748b !important; text-shadow: none !important; }
-        @keyframes pulseCarga { from { opacity: 0.3; } to { opacity: 0.8; } }
+        .minutos-texto { font-size: 0.35em; color: var(--text-muted); display: block; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .brillo-carga { animation: pulseCarga 1s infinite alternate; color: var(--text-muted) !important; }
+        @keyframes pulseCarga { from { opacity: 0.4; } to { opacity: 0.8; } }
 
-        .progreso-container { width: 100%; height: 10px; background: rgba(255,255,255,0.05); border-radius: 20px; margin: 25px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
-        .progreso-barra { height: 100%; width: 0%; background: #4ade80; transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* BARRA DE PROGRESO */
+        .progreso-container { width: 100%; height: 6px; background: var(--border-color); border-radius: 10px; margin: 25px 0; overflow: hidden; }
+        .progreso-barra { height: 100%; width: 0%; background: var(--accent-color); transition: width 1s ease-in-out; }
 
-        .estado-bus { height: 20px; opacity: 0.9; font-size: 0.95em; margin-bottom: 5px; color: #cbd5e1; font-weight: bold;}
-        .estado-servidor { height: 15px; font-size: 0.7em; margin-top: 10px; opacity: 0.4; }
+        .estado-bus { height: 20px; font-size: 1em; margin-bottom: 5px; color: var(--text-muted); font-weight: 500;}
+        .estado-servidor { height: 15px; font-size: 0.75em; margin-top: 15px; color: var(--text-muted); opacity: 0.7; }
 
-        .btn-volver { align-self: flex-start; background: rgba(255,255,255,0.1); border: none; color: #fff; cursor: pointer; font-size: 0.9em; padding: 8px 15px; border-radius: 10px; margin-bottom: 15px; }
+        /* BOTONES DE ACCIÓN ACCENTUADOS EN ROJO */
+        .btn-volver { align-self: flex-start; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-color); cursor: pointer; font-size: 0.9em; padding: 8px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 500; }
+        .btn-volver:hover { background: var(--border-color); }
         
         button.btn-accion { 
-            width: 100%; padding: 15px; border: none; border-radius: 15px; color: white; 
-            font-size: 1.1em; font-weight: bold; cursor: pointer; transition: all 0.3s; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            background: linear-gradient(99deg, #FF00FF 0%, #00FFFF 100%); 
+            width: 100%; padding: 16px; border: none; border-radius: 12px; color: white; 
+            font-size: 1.05em; font-weight: 600; cursor: pointer; 
+            background: var(--accent-color);
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
         } 
-        button.btn-accion:active { transform: translateY(3px); }
-        button.btn-accion:disabled { opacity: 0.5; filter: grayscale(1); }
+        button.btn-accion:hover { background: var(--accent-hover); }
+        button.btn-accion:active { transform: translateY(1px); }
+        button.btn-accion:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
 
-        /* FORMULARIO AÑADIR PARADA */
-        .formulario { display: flex; flex-direction: column; gap: 15px; width: 100%; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
-        .formulario input, .formulario select { padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; font-size: 1em; }
-        .formulario input::placeholder { color: rgba(255,255,255,0.5); }
-        .formulario label { font-size: 0.8em; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: -10px; }
+        .btn-secundario {
+            background: transparent; border: 1px solid var(--border-color); color: var(--text-color); padding: 6px 14px; border-radius: 8px; font-weight: 600; font-size: 0.85em; cursor: pointer;
+        }
+        .btn-secundario:hover { background: var(--surface-color); }
 
-        .alerta-roja { animation: flashRed 1s infinite; }
-        @keyframes flashRed { 0%, 100% { background-color: #ef4444; } 50% { background-color: #7f1d1d; } }
-        .modo-ahora { animation: rainbowText 2s linear infinite; }
-        @keyframes rainbowText { 0% { color: #f87171; } 33% { color: #fbbf24; } 66% { color: #34d399; } 100% { color: #f87171; } }
+        /* FORMULARIO */
+        .formulario { display: flex; flex-direction: column; gap: 15px; width: 100%; background: var(--surface-color); padding: 25px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px var(--shadow-color); }
+        .formulario input, .formulario select { padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); font-size: 1em; }
+        .formulario input:focus, .formulario select:focus { border-color: var(--accent-color); outline: none; }
+        .formulario input::placeholder { color: var(--text-muted); opacity: 0.6; }
+        .formulario label { font-size: 0.8em; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: -10px; }
+
+        /* CRÍTICO / AHORA */
+        .urgente-rojo { color: #ef4444 !important; }
     </style>
 </head>
 <body>
 
-    <div id="fondo-textos" class="fondo-textos"></div>
-    <div id="reloj" class="reloj-global">00:00:00</div>
+    <div class="header-controls">
+        <div id="reloj" class="reloj-global">00:00:00</div>
+        <button class="btn-tema" onclick="alternarTema()" title="Cambiar modo claro/oscuro">🌓</button>
+    </div>
 
     <div id="vista-menu" class="seccion-app" style="display: flex;">
-        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 15px;">
-            <h3 style="margin: 0; opacity: 0.8; font-weight: 800; letter-spacing: 1px;">MIS PARADAS</h3>
+        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 10px;">
+            <h3 style="margin: 0; font-weight: 700; letter-spacing: -0.5px;">Mis Paradas</h3>
             <div style="display: flex; gap: 8px;">
-                <button onclick="compartirApp()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; cursor: pointer;">📤 COMPARTIR</button>
-                <button onclick="mostrarFormulario()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; cursor: pointer;">+ AÑADIR</button>
+                <button class="btn-secundario" onclick="compartirApp()">Compartir</button>
+                <button class="btn-secundario" style="border-color: var(--accent-color); color: var(--accent-color);" onclick="mostrarFormulario()">+ Añadir</button>
             </div>
         </div>
-        
         <div class="lista-menu" id="contenedor-paradas"></div>
     </div>
 
     <div id="vista-formulario" class="seccion-app">
-        <button class="btn-volver" onclick="irAlMenu()">❮ CANCELAR</button>
-        <h3 style="align-self: flex-start; margin-top: 0;">NUEVA PARADA</h3>
+        <button class="btn-volver" onclick="irAlMenu()">❮ Cancelar</button>
+        <h3 style="align-self: flex-start; margin-top: 0; font-weight: 700;">Nueva Parada</h3>
         <div class="formulario">
-            <label>Nombre personalizado (ej. Casa, Trabajo)</label>
-            <input type="text" id="input-nombre" placeholder="Mi parada">
+            <label>Nombre personalizado</label>
+            <input type="text" id="input-nombre" placeholder="Ej. Casa, Trabajo...">
             
-            <label>Localidad (ej. Barcelona, Sant Joan Despí)</label>
-            <input type="text" id="input-localidad" placeholder="Ciudad o municipio">
+            <label>Localidad</label>
+            <input type="text" id="input-localidad" placeholder="Ej. Barcelona, Sant Just...">
             
-            <label>Línea (ej. V5, X30)</label>
-            <input type="text" id="input-linea" placeholder="V5">
+            <label>Línea</label>
+            <input type="text" id="input-linea" placeholder="Ej. V5, X30...">
             
-            <label>Código de la Parada (ej. 3521)</label>
-            <input type="text" id="input-codigo" placeholder="Número de parada">
+            <label>Código de la Parada</label>
+            <input type="text" id="input-codigo" placeholder="Ej. 3521">
             
             <label>Red de Autobuses</label>
             <select id="input-red">
-                <option value="TMB">TMB (Buses rojos de Barcelona)</option>
-                <option value="AMB">AMB (Buses amarillos/metropolitanos)</option>
+                <option value="TMB">TMB (Buses urbanos Barcelona)</option>
+                <option value="AMB">AMB (Buses metropolitanos)</option>
             </select>
             
-            <button class="btn-accion" style="margin-top: 10px;" onclick="guardarParada()">GUARDAR PARADA</button>
+            <button class="btn-accion" style="margin-top: 5px;" onclick="guardarParada()">Guardar Parada</button>
         </div>
     </div>
 
     <div id="vista-detalle" class="seccion-app">
-        <button class="btn-volver" onclick="irAlMenu()">❮ VOLVER</button>
+        <button class="btn-volver" onclick="irAlMenu()">❮ Volver</button>
         <div class="tarjeta">
-            <div id="detalle-codigo" style="font-size: 0.8em; opacity: 0.5; margin-bottom: 10px; letter-spacing: 2px;">CÓDIGO --</div>
+            <div id="detalle-codigo" style="font-size: 0.8em; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 1px;">CÓDIGO --</div>
             <div id="detalle-linea" class="linea">--</div>
             <div class="tiempo" id="detalle-tiempo">--</div>
             <div class="progreso-container"><div id="detalle-barra" class="progreso-barra"></div></div>
-            <div id="detalle-siguiente" class="estado-bus">Esperando conexión...</div>
+            <div id="detalle-siguiente" class="estado-bus">Conectando...</div>
             <div id="detalle-info" class="estado-servidor"></div>
         </div>
-        <button id="btn-actualizar" class="btn-accion" onclick="forzarActualizacion()">ACTUALIZAR DATOS</button>
+        <button id="btn-actualizar" class="btn-accion" onclick="forzarActualizacion()">Actualizar Datos</button>
     </div>
 
     <script>
-        // CONFIGURACIÓN API
+        // CONFIGURACIÓN API TMB
         const APP_ID = "05f36d2d"; 
         const APP_KEY = "7337db37d02d34777f38d728ce1c1903"; 
 
@@ -179,7 +249,31 @@
         let paradaActiva = null; 
         let timerActualizacion = null;
 
-        // 1. CARGAR PARADAS
+        // ASIGNACIÓN DE COLORES ADAPTADOS A LA NUEVA INTERFAZ MODERNA
+        function obtenerColorLinea(linea, red) {
+            const l = linea.toUpperCase();
+            if (l === 'X30') return '#ea580c';      // Naranja moderno y sólido
+            if (l === 'L52') return '#ca8a04';      // Amarillo/Ámbar oscuro (legible en fondo claro y oscuro)
+            if (red === 'TMB') return '#0284c7';    // Azul/Cian corporativo elegante
+            return '#db2777';                       // Fucsia/Rosa estilizado para resto de AMB
+        }
+
+        // SISTEMA DE CONFIGURACIÓN DE TEMA CLARO / OSCURO
+        function inicializarTema() {
+            const temaGuardado = localStorage.getItem('tema-preferido');
+            if (temaGuardado === 'claro') {
+                document.body.classList.add('light-mode');
+            } else {
+                document.body.classList.remove('light-mode');
+            }
+        }
+
+        function alternarTema() {
+            document.body.classList.toggle('light-mode');
+            localStorage.setItem('tema-preferido', document.body.classList.contains('light-mode') ? 'claro' : 'oscuro');
+        }
+
+        // 1. CARGAR PARADAS DESDE STORAGE
         let misParadas = JSON.parse(localStorage.getItem('paradasGuardadas_v3'));
         if (!misParadas || misParadas.length === 0) {
             misParadas = [
@@ -197,18 +291,15 @@
             contenedor.innerHTML = ''; 
             
             misParadas.forEach(p => {
-                let colorLinea = '#00FFFF'; // Defecto Cyan neón
-                if(p.linea.toUpperCase() === 'X30') colorLinea = '#FF4500'; // Naranja brillante
-                if(p.linea.toUpperCase() === 'L52') colorLinea = '#FFFF00'; // Amarillo neón
-
+                const colorLinea = obtenerColorLinea(p.linea, p.red);
                 const div = document.createElement('div');
                 div.className = 'item-menu';
                 div.innerHTML = `
                     <div class="item-menu-click" onclick="abrirParada(${p.id})">
-                        <span style="font-size: 1.8em; filter: drop-shadow(0 0 10px ${colorLinea});">📍</span>
+                        <span style="font-size: 1.5em;">🚌</span>
                         <div class="texto-item">
                             <span class="nombre-parada">${p.nombre}</span>
-                            <span style="font-size: 0.75em; color: #94a3b8; margin-top: 3px; letter-spacing: 0.5px;">🏙️ ${p.localidad}</span>
+                            <span style="font-size: 0.8em; color: var(--text-muted); margin-top: 2px;">🏙️ ${p.localidad}</span>
                             <span class="lineas-badge" style="color: ${colorLinea}">Línea ${p.linea} (${p.red})</span>
                         </div>
                     </div>
@@ -222,7 +313,6 @@
         function irAlMenu() {
             document.querySelectorAll('.seccion-app').forEach(s => s.style.display = 'none');
             document.getElementById('vista-menu').style.display = 'flex';
-            document.body.style.animationDuration = '15s';
             paradaActiva = null;
             if(timerActualizacion) clearInterval(timerActualizacion);
         }
@@ -236,27 +326,10 @@
             paradaActiva = misParadas.find(p => p.id === id);
             
             document.getElementById('detalle-codigo').innerText = `CÓDIGO ${paradaActiva.codigo}`;
-            document.getElementById('detalle-linea').innerText = paradaActiva.linea.toUpperCase();
             
-            const btn = document.getElementById('btn-actualizar');
             const badge = document.getElementById('detalle-linea');
-            
-            // Colores específicos para cada red o línea en el degradado
-            if (paradaActiva.red === 'TMB') {
-                btn.style.background = 'linear-gradient(99deg, #00FFFF 0%, #007BFF 100%)'; // Cyan a Azul
-            } else if (paradaActiva.linea.toUpperCase() === 'L52') {
-                btn.style.background = 'linear-gradient(99deg, #FFFF00 0%, #FFD700 100%)'; // Amarillo Neón
-            } else if (paradaActiva.linea.toUpperCase() === 'X30') {
-                btn.style.background = 'linear-gradient(99deg, #FF4500 0%, #FF8C00 100%)'; // Naranja brillante
-            } else {
-                btn.style.background = 'linear-gradient(99deg, #FF00FF 0%, #FF69B4 100%)'; // Fucsia por defecto para AMB
-            }
-
-            badge.style.background = btn.style.background;
-            badge.style.color = '#ffffff'; 
-            btn.style.color = '#ffffff';
-            badge.style.textShadow = '0 1px 3px rgba(0,0,0,0.6)'; // Sombra más oscura para contraste
-            btn.style.textShadow = '0 1px 3px rgba(0,0,0,0.6)';
+            badge.innerText = paradaActiva.linea.toUpperCase();
+            badge.style.backgroundColor = obtenerColorLinea(paradaActiva.linea, paradaActiva.red);
 
             document.querySelectorAll('.seccion-app').forEach(s => s.style.display = 'none');
             document.getElementById('vista-detalle').style.display = 'flex';
@@ -267,7 +340,7 @@
             timerActualizacion = setInterval(buscarDatosBus, 30000);
         }
 
-        // 4. LÓGICA DE AÑADIR/BORRAR PARADAS
+        // 4. LÓGICA STORAGE
         function guardarEnMemoria() { localStorage.setItem('paradasGuardadas_v3', JSON.stringify(misParadas)); }
 
         function guardarParada() {
@@ -277,7 +350,7 @@
             const codigo = document.getElementById('input-codigo').value;
             const red = document.getElementById('input-red').value;
 
-            if(!nombre || !linea || !codigo) { alert("¡Rellena los campos principales!"); return; }
+            if(!nombre || !linea || !codigo) { alert("Por favor, rellena los campos principales."); return; }
 
             const nuevaParada = { id: Date.now(), nombre, linea: linea.toUpperCase(), codigo, red, localidad };
             misParadas.push(nuevaParada);
@@ -293,19 +366,19 @@
         }
 
         function borrarParada(id) {
-            if(confirm("¿Seguro que quieres borrar esta parada?")) {
+            if(confirm("¿Seguro que quieres eliminar esta parada?")) {
                 misParadas = misParadas.filter(p => p.id !== id);
                 guardarEnMemoria();
                 renderizarMenu();
             }
         }
 
-        // 5. LÓGICA DE ACTUALIZACIÓN DE DATOS
+        // 5. PROCESAMIENTO DE TIEMPOS
         function setEstadoCarga() {
             const tiempoEl = document.getElementById('detalle-tiempo');
             tiempoEl.classList.add('brillo-carga');
-            tiempoEl.innerHTML = '88'; 
-            document.getElementById('detalle-siguiente').innerText = "Buscando...";
+            tiempoEl.innerHTML = '--'; 
+            document.getElementById('detalle-siguiente').innerText = "Cargando horarios...";
         }
 
         function procesarResultados(min1, min2) {
@@ -314,35 +387,33 @@
             const sigEl = document.getElementById('detalle-siguiente');
             
             tiempoEl.classList.remove('brillo-carga');
+            tiempoEl.classList.remove('urgente-rojo');
 
-            // Asegurarnos de que tenemos un número válido
             if (min1 === null || min1 === undefined || isNaN(min1)) {
-                tiempoEl.innerHTML = "--"; barraEl.style.width = "0%";
-                sigEl.innerText = "Sin buses próximos o servidor inactivo";
-                document.body.style.animationDuration = '15s';
+                tiempoEl.innerHTML = "--"; 
+                barraEl.style.width = "0%";
+                sigEl.innerText = "Sin autobuses próximos registrados.";
                 return;
             }
-
-            if (min1 <= 3) document.body.style.animationDuration = '3s'; 
-            else if (min1 <= 10) document.body.style.animationDuration = '8s'; 
-            else document.body.style.animationDuration = '15s'; 
 
             if (min1 <= 3 && navigator.vibrate) navigator.vibrate([200, 100, 200]); 
 
             if (min2 !== null && min2 !== undefined && !isNaN(min2)) {
-                sigEl.innerHTML = `Próximo bus en: <span style="color:#fff;">${min2} min</span>`;
+                sigEl.innerHTML = `Siguiente autobús en: <span style="font-weight: 600; color: var(--text-color);">${min2} min</span>`;
             } else {
-                sigEl.innerText = "No hay más buses en cola";
+                sigEl.innerText = "No hay más autobuses previstos.";
             }
 
-            let porcentaje = Math.max(0, 100 - (min1 * 6.6));
+            let porcentaje = Math.max(0, Math.min(100, 100 - (min1 * 6.6)));
             barraEl.style.width = porcentaje + "%";
             
-            if (min1 <= 3) { barraEl.classList.add("alerta-roja"); barraEl.style.backgroundColor = ""; } 
-            else { barraEl.classList.remove("alerta-roja"); barraEl.style.backgroundColor = "#00FF00"; }
-            
-            if (min1 === 0) { tiempoEl.innerHTML = "¡AHORA!"; tiempoEl.classList.add("modo-ahora"); } 
-            else { tiempoEl.innerHTML = min1 + '<span class="minutos-texto">minutos</span>'; tiempoEl.classList.remove("modo-ahora"); }
+            if (min1 === 0) { 
+                tiempoEl.innerHTML = "¡AHORA!"; 
+                tiempoEl.classList.add('urgente-rojo');
+            } else { 
+                tiempoEl.innerHTML = min1 + '<span class="minutos-texto">minutos</span>'; 
+                if(min1 <= 3) tiempoEl.classList.add('urgente-rojo');
+            }
         }
 
         async function buscarDatosBus() {
@@ -351,12 +422,6 @@
             
             const controller = new AbortController();
             const timeoutConexion = setTimeout(() => controller.abort(), 30000);
-
-            const alertaDormido = setTimeout(() => {
-                if(paradaActiva.red !== 'TMB') {
-                    document.getElementById('detalle-siguiente').innerText = "Despertando servidor AMB...";
-                }
-            }, 2000);
             
             try {
                 if (paradaActiva.red === 'TMB') {
@@ -372,47 +437,29 @@
                     if (datos.status === "ok") {
                         const buses = datos.buses.filter(b => b.linea.toUpperCase().includes(paradaActiva.linea));
                         
-                        // 👇 ¡AQUÍ ESTÁ LA MAGIA! Buscamos "minutos" en lugar de "t-in-min" 👇
-                        let rawAMB1 = buses[0]?.minutos;
-                        let rawAMB2 = buses[1]?.minutos;
-
-                        // Función rápida para limpiar el tiempo de AMB
-                        const limpiarTiempoAMB = (tiempo) => {
-                            if (tiempo === undefined || tiempo === null) return null; 
-                            if (isNaN(tiempo)) return 0; 
-                            return parseInt(tiempo); 
-                        };
-
-                        let minAMB1 = limpiarTiempoAMB(rawAMB1);
-                        let minAMB2 = limpiarTiempoAMB(rawAMB2);
+                        let minAMB1 = buses[0]?.minutos !== undefined ? parseInt(buses[0].minutos) : null;
+                        let minAMB2 = buses[1]?.minutos !== undefined ? parseInt(buses[1].minutos) : null;
 
                         procesarResultados(minAMB1, minAMB2);
                     } else throw new Error("AMB Error");
                 }
-                document.getElementById('detalle-info').innerText = "Servidor: Online ✅";
+                document.getElementById('detalle-info').innerText = "Conexión estable con el consorcio";
             } catch (e) {
-                if(e.name === 'AbortError') {
-                    document.getElementById('detalle-info').innerText = "⚠️ Tiempo agotado (Servidor apagado)";
-                } else {
-                    document.getElementById('detalle-info').innerText = "⚠️ Error de conexión";
-                }
+                document.getElementById('detalle-info').innerText = e.name === 'AbortError' ? "⚠️ Servidor lento o inactivo" : "⚠️ Error de red";
                 procesarResultados(null, null);
             } finally {
                 clearTimeout(timeoutConexion);
-                clearTimeout(alertaDormido);
             }
         }
 
         async function forzarActualizacion() {
             const btn = document.getElementById('btn-actualizar');
-            const original = btn.innerText;
-            btn.innerText = "SINCRONIZANDO..."; 
+            btn.innerText = "Sincronizando..."; 
             btn.disabled = true;
-            
             try {
                 await buscarDatosBus();
             } finally {
-                setTimeout(() => { btn.innerText = original; btn.disabled = false; }, 800);
+                setTimeout(() => { btn.innerText = "Actualizar Datos"; btn.disabled = false; }, 600);
             }
         }
 
@@ -420,135 +467,29 @@
             if (navigator.share) {
                 try {
                     await navigator.share({
-                        title: 'Mi Bus - Synthwave Edition',
-                        text: '¡Mira esta App para ver los tiempos del autobús en tiempo real!',
+                        title: 'Mi Bus',
+                        text: 'Consulta los tiempos de llegada del bus fácilmente.',
                         url: window.location.href 
                     });
-                } catch (error) {
-                    console.log('Compartir cancelado');
-                }
+                } catch (e) {}
             } else {
-                alert('Copia este enlace para compartir la app:\n' + window.location.href);
+                alert('Copia este enlace para compartir:\n' + window.location.href);
             }
         }
 
-        // FONDO CANVAS NEÓN
-        function crearFondo() {
-            const viejoFondo = document.getElementById('fondo-textos');
-            if (viejoFondo) viejoFondo.remove();
-
-            const canvas = document.createElement('canvas');
-            canvas.style.position = 'fixed';
-            canvas.style.top = '0';
-            canvas.style.left = '0';
-            canvas.style.width = '100vw';
-            canvas.style.height = '100vh';
-            canvas.style.zIndex = '-2';
-            document.body.appendChild(canvas);
-
-            const ctx = canvas.getContext('2d');
-            let w, h;
-
-            function ajustarTamaño() {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-            }
-            window.addEventListener('resize', ajustarTamaño);
-            ajustarTamaño();
-
-            const colores = [
-                '#FF00FF', '#00FFFF', '#FFFF00', '#00FF00', 
-                '#8A2BE2', '#FF69B4', '#7FFFD4', '#FF4500' 
-            ];
-            const lineas = [];
-
-            for(let i = 0; i < 10; i++) {
-                lineas.push(crearRuta());
-            }
-
-            function crearRuta() {
-                return {
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    vx: (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 1.5 + 0.5), 
-                    vy: 0, 
-                    color: colores[Math.floor(Math.random() * colores.length)],
-                    grosor: Math.random() * 3 + 1.5,
-                    trazos: [],
-                    distanciaHastaGiro: Math.random() * 150 + 50
-                };
-            }
-
-            function animarMapa() {
-                ctx.fillStyle = 'rgba(2, 6, 23, 0.08)'; 
-                ctx.fillRect(0, 0, w, h);
-
-                lineas.forEach(l => {
-                    l.trazos.push({x: l.x, y: l.y});
-                    if(l.trazos.length > 40) l.trazos.shift(); 
-
-                    l.x += l.vx;
-                    l.y += l.vy;
-
-                    l.distanciaHastaGiro--;
-                    if(l.distanciaHastaGiro <= 0) {
-                        if(l.vx !== 0) { 
-                            l.vy = (Math.random() > 0.5 ? 1 : -1) * Math.abs(l.vx); 
-                            l.vx = 0; 
-                        } else { 
-                            l.vx = (Math.random() > 0.5 ? 1 : -1) * Math.abs(l.vy); 
-                            l.vy = 0; 
-                        }
-                        l.distanciaHastaGiro = Math.random() * 200 + 50;
-                    }
-
-                    if(l.x < 0 || l.x > w || l.y < 0 || l.y > h) {
-                    l.trazos = []; 
-                    if(l.x < 0) l.x = w; 
-                    if(l.x > w) l.x = 0;
-                    if(l.y < 0) l.y = h; 
-                    if(l.y > h) l.y = 0;
-                    }
-
-                    ctx.beginPath();
-                    ctx.strokeStyle = l.color;
-                    ctx.lineWidth = l.grosor;
-                    ctx.lineCap = 'round';
-                    ctx.lineJoin = 'round';
-                    
-                    if(l.trazos.length > 0) {
-                        ctx.moveTo(l.trazos[0].x, l.trazos[0].y);
-                        for(let i = 1; i < l.trazos.length; i++) {
-                            ctx.lineTo(l.trazos[i].x, l.trazos[i].y);
-                        }
-                        ctx.stroke();
-                    }
-                });
-                requestAnimationFrame(animarMapa);
-            }
-            animarMapa();
-        }
-
-        // RELOJ GLOBAL
+        // RELOJ DIGITAL
         function actualizarReloj() {
             const ahora = new Date();
-            const horas = String(ahora.getHours()).padStart(2, '0');
-            const minutos = String(ahora.getMinutes()).padStart(2, '0');
-            const segundos = String(ahora.getSeconds()).padStart(2, '0');
             const relojEl = document.getElementById('reloj');
-            if(relojEl) relojEl.innerText = `${horas}:${minutos}:${segundos}`;
+            if(relojEl) {
+                relojEl.innerText = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            }
         }
         
-        // SERVICE WORKER
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then(reg => console.log('PWA Lista')).catch(err => console.error('PWA Error', err));
-            });
-        }
-
+        // EJECUCIÓN AL INICIAR
         window.onload = () => {
+            inicializarTema();
             renderizarMenu();
-            crearFondo();
             actualizarReloj();
             setInterval(actualizarReloj, 1000);
         };
