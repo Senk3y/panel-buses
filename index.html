@@ -185,11 +185,13 @@
 </head>
 <body>
 
+    <!-- CONTROL SUPERIOR CON RELOJ Y CAMBIO DE TEMA -->
     <div class="header-controls">
         <div id="reloj" class="reloj-global">00:00:00</div>
         <button class="btn-tema" onclick="alternarTema()" title="Cambiar modo claro/oscuro">🌓</button>
     </div>
 
+    <!-- VISTA PRINCIPAL (MENÚ) -->
     <div id="vista-menu" class="seccion-app" style="display: flex;">
         <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 10px;">
             <h3 style="margin: 0; font-weight: 700; letter-spacing: -0.5px;">Mis Paradas</h3>
@@ -201,6 +203,7 @@
         <div class="lista-menu" id="contenedor-paradas"></div>
     </div>
 
+    <!-- VISTA FORMULARIO -->
     <div id="vista-formulario" class="seccion-app">
         <button class="btn-volver" onclick="irAlMenu()">❮ Cancelar</button>
         <h3 style="align-self: flex-start; margin-top: 0; font-weight: 700;">Nueva Parada</h3>
@@ -212,7 +215,7 @@
             <input type="text" id="input-localidad" placeholder="Ej. Barcelona, Sant Just...">
             
             <label>Línea</label>
-            <input type="text" id="input-linea" placeholder="Ej. V5, X30...">
+            <input type="text" id="input-linea" placeholder="Ej. V5, X30, 63...">
             
             <label>Código de la Parada</label>
             <input type="text" id="input-codigo" placeholder="Ej. 3521">
@@ -227,6 +230,7 @@
         </div>
     </div>
 
+    <!-- VISTA DETALLE -->
     <div id="vista-detalle" class="seccion-app">
         <button class="btn-volver" onclick="irAlMenu()">❮ Volver</button>
         <div class="tarjeta">
@@ -252,10 +256,11 @@
         // ASIGNACIÓN DE COLORES ADAPTADOS A LA NUEVA INTERFAZ MODERNA
         function obtenerColorLinea(linea, red) {
             const l = linea.toUpperCase();
-            if (l === 'X30') return '#ea580c';      // Naranja moderno y sólido
-            if (l === 'L52') return '#ca8a04';      // Amarillo/Ámbar oscuro (legible en fondo claro y oscuro)
-            if (red === 'TMB') return '#0284c7';    // Azul/Cian corporativo elegante
-            return '#db2777';                       // Fucsia/Rosa estilizado para resto de AMB
+            if (l === '63' || l === 'L63') return '#dc2626'; // Rojo específico para la Línea 63
+            if (l === 'X30') return '#ea580c';              // Naranja moderno
+            if (l === 'L52') return '#ca8a04';              // Amarillo/Ámbar oscuro
+            if (red === 'TMB') return '#0284c7';            // Azul/Cian corporativo
+            return '#db2777';                               // Fucsia/Rosa para el resto de AMB
         }
 
         // SISTEMA DE CONFIGURACIÓN DE TEMA CLARO / OSCURO
@@ -273,14 +278,16 @@
             localStorage.setItem('tema-preferido', document.body.classList.contains('light-mode') ? 'claro' : 'oscuro');
         }
 
-        // 1. CARGAR PARADAS DESDE STORAGE
-        let misParadas = JSON.parse(localStorage.getItem('paradasGuardadas_v3'));
+        // 1. CARGAR PARADAS DESDE STORAGE (v6 para incluir la nueva parada X30)
+        let misParadas = JSON.parse(localStorage.getItem('paradasGuardadas_v6'));
         if (!misParadas || misParadas.length === 0) {
             misParadas = [
                 { id: 1, nombre: 'C. Bell-lloc - Berlín', linea: 'V5', codigo: '3521', red: 'TMB', localidad: 'Barcelona' },
                 { id: 2, nombre: 'Pl. Reina Maria Cristina', linea: 'X30', codigo: '237', red: 'AMB', localidad: 'Barcelona' },
                 { id: 3, nombre: 'Major - Mercat', linea: 'L52', codigo: '002275', red: 'AMB', localidad: "Sant Joan Despí" },
-                { id: 4, nombre: 'Rosa Leveroni', linea: 'X30', codigo: '109953', red: 'AMB', localidad: 'Sant Just Desvern' }
+                { id: 4, nombre: 'Rosa Leveroni', linea: 'X30', codigo: '109953', red: 'AMB', localidad: 'Sant Just Desvern' },
+                { id: 5, nombre: 'Rambla Sant Just - Ctra Reial', linea: '63', codigo: '001211', red: 'TMB', localidad: 'Sant Just Desvern' },
+                { id: 6, nombre: 'Diagonal - Parc de Cervantes', linea: 'X30', codigo: '000251', red: 'AMB', localidad: 'Barcelona' }
             ];
             guardarEnMemoria();
         }
@@ -341,7 +348,7 @@
         }
 
         // 4. LÓGICA STORAGE
-        function guardarEnMemoria() { localStorage.setItem('paradasGuardadas_v3', JSON.stringify(misParadas)); }
+        function guardarEnMemoria() { localStorage.setItem('paradasGuardadas_v6', JSON.stringify(misParadas)); }
 
         function guardarParada() {
             const nombre = document.getElementById('input-nombre').value;
