@@ -253,7 +253,7 @@
         let paradaActiva = null; 
         let timerActualizacion = null;
 
-        // ASIGNACIÓN DE COLORES ADAPTADOS A LA NUEVA INTERFAZ
+        // ASIGNACIÓN DE COLORES
         function obtenerColorLinea(linea, red) {
             const l = String(linea).toUpperCase();
             if (l === '63' || l === 'L63') return '#dc2626'; // Rojo específico para la Línea 63
@@ -262,6 +262,92 @@
             if (l === 'L52') return '#ca8a04';              // Amarillo/Ámbar oscuro
             if (red === 'TMB') return '#0284c7';            // Azul/Cian corporativo
             return '#db2777';                               // Fucsia/Rosa para el resto de AMB
+        }
+
+        // EXTRAER NOMBRE DE LÍNEA DE CUALQUIER PROPIEDAD POSIBLE
+        function obtenerNombreLinea(b) {
+            if (!b) return "";
+            return String(b.linea || b.line || b.codiLinea || b.label || b.nomLinea || b.nombre || b.idLinea || b.route || "").trim();
+        }
+
+        // EXTRAER VALOR DE TIEMPO DE CUALQUIER PROPIEDAD POSIBLE
+        function obtenerValorTiempo(b) {
+            if (!b) return null;
+            if (b["t-in-min"] !== undefined) return b["t-in-min"];
+            if (b.minutos !== undefined && b.minutos !== null) return b.minutos;
+            if (b.tiempo !== undefined && b.tiempo !== null) return b.tiempo;
+            if (b.temps !== undefined && b.temps !== null) return b.temps;
+            if (b.minuts !== undefined && b.minuts !== null) return b.minuts;
+            if (b.espera !== undefined && b.espera !== null) return b.espera;
+            if (b.time !== undefined && b.time !== null) return b.time;
+            if (b.text !== undefined && b.text !== null) return b.text;
+            if (b["text-ca"] !== undefined) return b["text-ca"];
+            return null;
+        }
+
+        // OBTENER LISTA DE BUSES NORMALIZADA DESDE CUALQUIER ESTRUCTURA DE RESPUESTA
+        function obtenerListaBuses(datos) {
+            if (Array.isArray(datos)) return datos;
+            if (Array.isArray(datos.buses)) return datos.buses;
+            if (Array.isArray(datos.data?.ibus)) return datos.data.ibus;
+            if (Array.isArray(datos.data)) return datos.data;
+            if (Array.isArray(datos.llegadas)) return datos.llegadas;
+            if (Array.isArray(datos.proximos)) return datos.proximos;
+            return [];
+        }
+
+        // COINCIDENCIA DE LÍNEAS ULTRARROBUSTA
+        function coincideLinea(lineaBus, lineaBuscada) {
+            if (!lineaBuscada) return false;
+            
+            const buscada = String(lineaBuscada).toUpperCase().replace(/[^A-Z0-9]/g, '');
+            const bus = String(lineaBus || "").toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+            if (!bus) return false;
+
+            // Alias y equivalencias para la Línea JM / Just Metro
+            if (buscada === 'JM' || buscada === 'JUSTMETRO' || buscada === 'LJM') {
+                if (bus.includes('JM') || bus.includes('JUST') || bus.includes('METRO') || bus.includes('164')) {
+                    return true;
+                }
+            }
+
+            return bus === buscada || bus.includes(buscada) || buscada.includes(bus);
+        }
+
+        // PARSER INTELIGENTE DE MINUTOS
+        function extraerMinutos(val) {
+            if (val === null || val === undefined) return null;
+            if (typeof val === 'number') return isNaN(val) ? null : val;
+            
+            let str = String(val).trim().toUpperCase();
+            if (!str) return null;
+
+            // Llegada inminente / en parada
+            if (str.includes('IMMINENT') || str.includes('INMINENTE') || str.includes('PARADA') || str.includes('AHORA')) {
+                return 0;
+            }
+
+            // Formato de hora programada ej. "18:25"
+            const matchHora = str.match(/(\d{1,2}):(\d{2})/);
+            if (matchHora) {
+                const ahora = new Date();
+                const hora = parseInt(matchHora[1], 10);
+                const min = parseInt(matchHora[2], 10);
+                const fechaBus = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), hora, min);
+                
+                let diffMin = Math.round((fechaBus - ahora) / 60000);
+                if (diffMin < 0 && diffMin > -10) return 0;
+                if (diffMin >= 0) return diffMin;
+            }
+
+            // Extraer primer número encontrado ("8 min", "8'", etc.)
+            const matchNum = str.match(/\d+/);
+            if (matchNum) {
+                return parseInt(matchNum[0], 10);
+            }
+
+            return null;
         }
 
         // SISTEMA DE CONFIGURACIÓN DE TEMA CLARO / OSCURO
@@ -279,8 +365,8 @@
             localStorage.setItem('tema-preferido', document.body.classList.contains('light-mode') ? 'claro' : 'oscuro');
         }
 
-        // CARGAR Y SANITIZAR PARADAS DESDE STORAGE (v10)
-        let misParadas = JSON.parse(localStorage.getItem('paradasGuardadas_v10'));
+        // CARGAR Y SANITIZAR PARADAS DESDE STORAGE (v12)
+        let misParadas = JSON.parse(localStorage.getItem('paradasGuardadas_v12'));
         if (!misParadas || misParadas.length === 0) {
             misParadas = [
                 { id: 1, nombre: 'C. Bell-lloc - Berlín', linea: 'V5', codigo: '3521', red: 'TMB', localidad: 'Barcelona' },
@@ -352,7 +438,7 @@
         }
 
         // LÓGICA STORAGE
-        function guardarEnMemoria() { localStorage.setItem('paradasGuardadas_v10', JSON.stringify(misParadas)); }
+        function guardarEnMemoria() { localStorage.setItem('paradasGuardadas_v12', JSON.stringify(misParadas)); }
 
         function guardarParada() {
             const nombre = document.getElementById('input-nombre').value;
@@ -442,32 +528,52 @@
             const timeoutConexion = setTimeout(() => controller.abort(), 30000);
             
             try {
+                let listaRaw = [];
+
                 if (paradaActiva.red === 'TMB') {
                     const codigoTMB = paradaActiva.codigo.replace(/^0+/, '') || '0';
                     const url = `https://api.tmb.cat/v1/ibus/stops/${codigoTMB}?app_id=${APP_ID}&app_key=${APP_KEY}`;
                     
                     const res = await fetch(url, { signal: controller.signal });
                     const datos = await res.json();
-                    
-                    const buses = datos.data?.ibus.filter(b => b.line.toUpperCase() === paradaActiva.linea) || [];
-                    procesarResultados(parseInt(buses[0]?.["t-in-min"]), parseInt(buses[1]?.["t-in-min"]));
+                    listaRaw = obtenerListaBuses(datos);
                 } else {
                     const codigoAMB = paradaActiva.codigo.padStart(6, '0');
                     const url = `https://mi-bus.onrender.com/api/amb?parada=${codigoAMB}`;
                     
                     const res = await fetch(url, { signal: controller.signal });
                     const datos = await res.json();
-                    
-                    if (datos.status === "ok") {
-                        const buses = datos.buses.filter(b => b.linea.toUpperCase().includes(paradaActiva.linea));
-                        
-                        let minAMB1 = buses[0]?.minutos !== undefined ? parseInt(buses[0].minutos) : null;
-                        let minAMB2 = buses[1]?.minutos !== undefined ? parseInt(buses[1].minutos) : null;
-
-                        procesarResultados(minAMB1, minAMB2);
+                    if (datos.status === "ok" || Array.isArray(datos.buses) || Array.isArray(datos)) {
+                        listaRaw = obtenerListaBuses(datos);
                     } else throw new Error("AMB Error");
                 }
-                document.getElementById('detalle-info').innerText = "Conexión estable con el consorcio";
+
+                // Filtrar buses por la línea seleccionada
+                let busesCoincidentes = listaRaw.filter(b => coincideLinea(obtenerNombreLinea(b), paradaActiva.linea));
+
+                // Fallback: Si no hay coincidencias directas pero los buses de la parada no incluyen el campo de línea
+                if (busesCoincidentes.length === 0 && listaRaw.length > 0) {
+                    const tienenNombre = listaRaw.some(b => obtenerNombreLinea(b) !== "");
+                    if (!tienenNombre) busesCoincidentes = listaRaw;
+                }
+
+                if (busesCoincidentes.length > 0) {
+                    let min1 = extraerMinutos(obtenerValorTiempo(busesCoincidentes[0]));
+                    let min2 = extraerMinutos(obtenerValorTiempo(busesCoincidentes[1]));
+                    procesarResultados(min1, min2);
+                    document.getElementById('detalle-info').innerText = "Conexión estable con el consorcio";
+                } else if (listaRaw.length > 0) {
+                    // Diagnóstico: Mostrar las líneas que la API devolvió para esa parada
+                    const lineasDetectadas = [...new Set(listaRaw.map(b => obtenerNombreLinea(b)).filter(Boolean))].join(', ');
+                    procesarResultados(null, null);
+                    document.getElementById('detalle-info').innerText = lineasDetectadas 
+                        ? `Líneas en esta parada: ${lineasDetectadas}` 
+                        : "Sin datos para la línea " + paradaActiva.linea;
+                } else {
+                    procesarResultados(null, null);
+                    document.getElementById('detalle-info').innerText = "Sin autobuses en circulación actualmente";
+                }
+
             } catch (e) {
                 document.getElementById('detalle-info').innerText = e.name === 'AbortError' ? "⚠️ Servidor lento o inactivo" : "⚠️ Error de red";
                 procesarResultados(null, null);
