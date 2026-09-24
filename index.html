@@ -543,7 +543,6 @@
                     
                     const res = await fetch(url, { signal: controller.signal });
                     const datos = await res.json();
-                    console.log("Respuesta del servidor AMB:", datos);
                     if (datos.status === "ok" || Array.isArray(datos.buses) || Array.isArray(datos)) {
                         listaRaw = obtenerListaBuses(datos);
                     } else throw new Error("AMB Error");
